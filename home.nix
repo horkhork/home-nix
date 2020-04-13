@@ -84,6 +84,7 @@ in {
     pkgs.wget
     pkgs.zsh-powerlevel10k
     pkgs.nerdfonts
+    pkgs.terraform
     vaultWorkspace
   ];
 
