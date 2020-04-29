@@ -1,0 +1,3 @@
+cd $WORKSPACE
+workspace create $COMPONENT $VERSION $BUILDOS
+

@@ -44,6 +44,15 @@ template=$2 # client to use as a template
       mkdir -p $out
     '';
   };
+
+  bartComponents = [
+    {
+      name = "vault";
+      version = "1.2.3-7.0";
+      buildOS = "alsi9-lite-lib64";
+    }
+  ];
+
 in {
   # This value determines the Home Manager release that your
   # configuration is compatible with. This helps avoid breakage
@@ -64,7 +73,7 @@ in {
     NIX_PROFILES = "/nix/var/nix/profiles/default /home/ssosik/.nix-profile";
     NIX_SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
     NSS_DEFAULT_DB_TYPE = "sql";
-    PATH = "/home/ssosik/.nix-profile/bin:$PATH";
+    PATH = "/home/ssosik/bin:/home/ssosik/.nix-profile/bin:$PATH";
     SHELL = "/home/ssosik/.nix-profile/bin/zsh";
     LOCALE_ARCHIVE = "/usr/lib/locale/locale-archive";
   };
@@ -73,6 +82,7 @@ in {
     pkgs.asciidoc
     pkgs.curl
     pkgs.gcc
+    pkgs.go
     pkgs.httpie
     pkgs.k6
     pkgs.pandoc
@@ -85,6 +95,7 @@ in {
     pkgs.zsh-powerlevel10k
     pkgs.nerdfonts
     pkgs.terraform
+    pkgs.vault
     vaultWorkspace
   ];
 
@@ -169,6 +180,95 @@ in {
 
   programs.ssh = {
     enable = true;
+
+    matchBlocks = {
+      "*.akamai.com" = {
+        extraOptions = {
+          HostKeyAlgorithms = "+ssh-dss";
+          User = "root";
+          ForwardX11 = "no";
+          ForwardAgent = "no";
+          StrictHostKeyChecking = "no";
+        };
+      };
+      "*.akamaitechnologies.com" = {
+        extraOptions = {
+          HostKeyAlgorithms = "+ssh-dss";
+          User = "root";
+          ForwardX11 = "no";
+          ForwardAgent = "no";
+          StrictHostKeyChecking = "no";
+        };
+      };
+      "172.25.*" = {
+        extraOptions = {
+          HostKeyAlgorithms = "+ssh-dss";
+          User = "root";
+          ForwardX11 = "no";
+          ForwardAgent = "no";
+          StrictHostKeyChecking = "no";
+        };
+      };
+      "172.26.*" = {
+        extraOptions = {
+          HostKeyAlgorithms = "+ssh-dss";
+          User = "root";
+          ForwardX11 = "no";
+          ForwardAgent = "no";
+          StrictHostKeyChecking = "no";
+        };
+      };
+      "*.tn.akamai.com" = {
+        extraOptions = {
+          HostKeyAlgorithms = "+ssh-dss";
+          User = "root";
+          ForwardX11 = "no";
+          ForwardAgent = "no";
+          StrictHostKeyChecking = "no";
+        };
+      };
+      "*.qa.akamai.com" = {
+        extraOptions = {
+          HostKeyAlgorithms = "+ssh-dss";
+          User = "root";
+          ForwardX11 = "no";
+          ForwardAgent = "no";
+          StrictHostKeyChecking = "no";
+        };
+      };
+      "198.18.*" = {
+        extraOptions = {
+          HostKeyAlgorithms = "+ssh-dss";
+          User = "root";
+          ForwardX11 = "no";
+          ForwardAgent = "no";
+          StrictHostKeyChecking = "no";
+        };
+      };
+      "198.19.*" = {
+        extraOptions = {
+          HostKeyAlgorithms = "+ssh-dss";
+          User = "root";
+          ForwardX11 = "no";
+          ForwardAgent = "no";
+          StrictHostKeyChecking = "no";
+        };
+      };
+
+      "*.vn.akamai.com" = {
+        extraOptions = {
+          ProxyCommand = "ssh root@$VRT_GW nc %h %p";
+          User = "root";
+        };
+      };
+      "100.80.*" = {
+        extraOptions = {
+          ProxyCommand = "ssh root@$VRT_GW nc %h %p";
+          User = "root";
+        };
+      };
+    };
+
     #matchBlocks = {
     #  "git.source.akamai.com" = {
     #    identityFile = "/home/ssosik/.ssh/2020-01-10";
