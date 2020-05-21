@@ -407,6 +407,7 @@ fi
       #SSH_AUTH_SOCK = ".ssh/ssh_auth_sock";
     };
     envExtra = "source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
+    #initExtraBeforeCompInit = "source ${homedir}/.cbe-dev.sh";
     oh-my-zsh = {
       enable = true;
       plugins = [ "git" "history" "taskwarrior" "tmuxinator" "virtualenv" "ssh-agent" ]; # "zsh-autosuggestions" "tmux"
