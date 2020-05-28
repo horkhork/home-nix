@@ -28,6 +28,10 @@ nnoremap ,e :exe getline(".")<CR>
 " Execute the current selection in ex
 map ,E :<C-w>exe join(getline("'<","'>"),'<Bar>')<CR>
 
+nnoremap ,v :r!tmux save-buffer -<CR>
+nnoremap ,c :silent .w !tmux load-buffer -<CR>
+xnoremap ,C <esc>:silent '<,'>:w !tmux load-buffer -<CR>
+
 " FZF Customizations
 command! -bang -nargs=* GGrep
   \ call fzf#vim#grep(
