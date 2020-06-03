@@ -6,6 +6,7 @@ let
 
 in {
   home.stateVersion = "20.03";
+  home.language.base = "en_US.UTF-8";
   home.packages = [
     pkgs.asciidoc
     pkgs.curl
@@ -29,7 +30,22 @@ in {
     pkgs.zsh-powerlevel10k
   ];
 
+  home.sessionVariables = {
+    #LESSCLOSE = "/usr/bin/lesspipe %s %s";
+    #LESSOPEN =| "/usr/bin/lesspipe %s";
+    NIX_PATH = "${homedir}/.nix-defexpr/channels";
+    #NIX_PROFILES = "/nix/var/nix/profiles/default ${homedir}/.nix-profile";
+    NIX_PROFILES = "${homedir}/.nix-profile";
+    #NIX_SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
+    #NSS_DEFAULT_DB_TYPE = "sql";
+    PATH = "${homedir}/.nix-profile/bin:$PATH";
+    SHELL = "${homedir}/.nix-profile/bin/zsh";
+    LOCALE_ARCHIVE = "/usr/lib/locale/locale-archive";
+  };
+
   programs = {
+    bat.enable = true;
+
     broot = {
       enable = true;
       enableZshIntegration = true;
@@ -113,13 +129,10 @@ in {
 
     tmux = {
       enable = true;
-      #extraConfig = ''
-      #  set -g default-shell /home/ssosik/.nix-profile/bin/zsh
-      #  set -g default-terminal "xterm-256color"
-      #  #set -g update-environment "DISPLAY SSH_ASKPASS SSH_AGENT_PID SSH_CONNECTION WINDOWID XAUTHORITY"
-      #  set-environment -g 'SSH_AUTH_SOCK' ~/.ssh/ssh_auth_sock
-      #  set -g update-environment "SSH_AUTH_SOCK"
-      #'';
+      extraConfig = ''
+        set -g default-shell /home/ssosik/.nix-profile/bin/zsh
+        set -g default-terminal "xterm-256color"
+      '';
       keyMode = "vi";
     };
 
@@ -179,7 +192,7 @@ in {
       };
       oh-my-zsh = {
         enable = true;
-            plugins = [ "git" "history" "taskwarrior" "virtualenv" ]; # "zsh-autosuggestions" "tmux" "tmuxinator" "ssh-agent"
+            plugins = [ "git" "history" "taskwarrior" "virtualenv" ]; # "tmuxinator" "ssh-agent"
             theme = "zsh-powerlevel10k/powerlevel10k";
             custom = "${pkgs.zsh-powerlevel10k}/share/";
       };
@@ -213,7 +226,6 @@ in {
 # # changes in each release.
 # home.stateVersion = "20.03";
 #
-# #home.language.base = "en_US.UTF-8";
 #
 # home.sessionVariables = {
 #   #LESSCLOSE = "/usr/bin/lesspipe %s %s";
