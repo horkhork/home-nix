@@ -31,16 +31,17 @@ in {
   ];
 
   home.sessionVariables = {
-    #LESSCLOSE = "/usr/bin/lesspipe %s %s";
-    #LESSOPEN =| "/usr/bin/lesspipe %s";
     NIX_PATH = "${homedir}/.nix-defexpr/channels";
     #NIX_PROFILES = "/nix/var/nix/profiles/default ${homedir}/.nix-profile";
     NIX_PROFILES = "${homedir}/.nix-profile";
-    #NIX_SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
-    #NSS_DEFAULT_DB_TYPE = "sql";
     PATH = "${homedir}/.nix-profile/bin:$PATH";
     SHELL = "${homedir}/.nix-profile/bin/zsh";
     LOCALE_ARCHIVE = "/usr/lib/locale/locale-archive";
+    POWERLEVEL9K_INSTANT_PROMPT = "quiet";
+    #LESSCLOSE = "/usr/bin/lesspipe %s %s";
+    #LESSOPEN =| "/usr/bin/lesspipe %s";
+    #NIX_SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
+    #NSS_DEFAULT_DB_TYPE = "sql";
   };
 
   programs = {
@@ -138,6 +139,7 @@ in {
 
     vim = {
       enable = true;
+      extraConfig = builtins.readFile "${homedir}/.config/nixpkgs/dot.vimrc";
       #settings = {
       #   relativenumber = true;
       #   number = true;
@@ -202,110 +204,7 @@ in {
 
   home.file.".p10k.zsh".text = builtins.readFile "${homedir}/.config/nixpkgs/dot.p10k.zsh";
   home.file.".zshrc".text = builtins.readFile "${homedir}/.config/nixpkgs/dot.zshrc";
+  home.file.".envrc".text = ''
+  '';
 
 }
-
-#
-#
-# config, pkgs, ... }:
-#
-# th import <nixpkgs> {};
-#
-# t
-# homedir = builtins.getEnv "HOME";
-# workspace = homedir + "/workspace";
-#
-#  {
-# # This value determines the Home Manager release that your
-# # configuration is compatible with. This helps avoid breakage
-# # when a new Home Manager release introduces backwards
-# # incompatible changes.
-# #
-# # You can update Home Manager without changing this value. See
-# # the Home Manager release notes for a list of state version
-# # changes in each release.
-# home.stateVersion = "20.03";
-#
-#
-# home.sessionVariables = {
-#   #LESSCLOSE = "/usr/bin/lesspipe %s %s";
-#   #LESSOPEN =| "/usr/bin/lesspipe %s";
-#   #NIX_PATH = "/home/ssosik/.nix-defexpr/channels";
-#   #NIX_PROFILES = "/nix/var/nix/profiles/default /home/ssosik/.nix-profile";
-#   #NIX_SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
-#   #NSS_DEFAULT_DB_TYPE = "sql";
-#   #PATH = "/home/ssosik/.nix-profile/bin:$PATH";
-#   #SHELL = "/home/ssosik/.nix-profile/bin/zsh";
-#   #LOCALE_ARCHIVE = "/usr/lib/locale/locale-archive";
-# };
-#
-# home.packages = [
-#   pkgs.asciidoc
-#   pkgs.curl
-#   pkgs.gcc
-#   pkgs.go
-#   pkgs.httpie
-#   pkgs.k6
-#   pkgs.pandoc
-#   pkgs.pv
-#   pkgs.python3
-#   pkgs.ripgrep
-#   pkgs.traceroute
-#   pkgs.unzip
-#   pkgs.wget
-#   pkgs.zsh-powerlevel10k
-#   pkgs.nerdfonts
-#   pkgs.terraform
-#   pkgs.vault
-# ];
-#
-# programs.ssh = {
-#   enable = true;
-# };
-#  home.file.".ssh/rc".text = ''
-# f [ ! -S ~/.ssh/ssh_auth_sock ] && [ -S "$SSH_AUTH_SOCK" ]; then
-#    ln -sf $SSH_AUTH_SOCK ~/.ssh/ssh_auth_sock
-# i
-# ';
-#
-# home.file.".envrc".text = ''
-# ;
-#
-# #programs.starship = {
-# #  enable = true;
-# #  #enableZshIntegration = true;
-# #  enableBashIntegration = true;
-# #};
-#
-#   home.file.".config/zsh/.p10k.zsh".text = builtins.readFile "/etc/nixos/dot.p10k.zsh";
-#
-#   programs.zsh = {
-#     enable = true;
-#     enableAutosuggestions = true;
-#     enableCompletion = true;
-#     autocd = true;
-#     dotDir = ".config/zsh";
-#     history = {
-#       extended = true;
-#       save = 50000;
-#       share = true;
-#       size = 50000;
-#     };
-#     #localVariables = {
-#     #  #ZSH_TMUX_ITERM2 = true;
-#     #  #POWERLEVEL9K_MODE = "nerdfont-complete";
-#     #  #COMPLETION_WAITING_DOTS = true;
-#     #  #ZSH_CUSTOM = "${pkgs.zsh-powerlevel9k}/share/";
-#     #  #POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD = true;
-#     #  #SSH_AUTH_SOCK = ".ssh/ssh_auth_sock";
-#     #};
-#     #envExtra = "source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
-#     oh-my-zsh = {
-#       enable = true;
-#           plugins = [ "git" "history" "taskwarrior" "virtualenv" ]; # "zsh-autosuggestions" "tmux" "tmuxinator" "ssh-agent"
-#           theme = "zsh-powerlevel10k/powerlevel10k";
-#           custom = "${pkgs.zsh-powerlevel10k}/share/";
-#     };
-#   };
-#
-# }
