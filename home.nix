@@ -13,6 +13,7 @@ let
   # - Install a few Ubuntu things, including CBE and PBRA
   # - Share .zsh_history across machines
 
+  # Provide a custom version of terraform
   terraform = stdenv.mkDerivation {
     name = "terraform-0.12.24";
 
@@ -27,8 +28,14 @@ let
       mkdir -p "$out/bin"
       cp $src/terraform $out/bin/.
     '';
-
   };
+
+  # Provide various Python packages
+  my-python-packages = python-packages: with python-packages; [
+    requests
+  ];
+  python-with-my-packages = pkgs.python3.withPackages my-python-packages;
+
 
 in {
   home.stateVersion = "20.03";
@@ -46,7 +53,8 @@ in {
     pkgs.niv # https://github.com/nmattia/niv
     pkgs.pandoc
     pkgs.pv
-    pkgs.python3
+    #pkgs.python3
+    python-with-my-packages
     pkgs.ripgrep
     #pkgs.terraform
     terraform
