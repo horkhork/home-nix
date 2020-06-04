@@ -61,7 +61,7 @@ in {
     NIX_PATH = "${homedir}/.nix-defexpr/channels";
     #NIX_PROFILES = "/nix/var/nix/profiles/default ${homedir}/.nix-profile";
     NIX_PROFILES = "${homedir}/.nix-profile";
-    PATH = "${homedir}/.nix-profile/bin:$PATH";
+    PATH = "${homedir}/.nix-profile/bin:${homedir}/bin:$PATH";
     SHELL = "${homedir}/.nix-profile/bin/zsh";
     LOCALE_ARCHIVE = "/usr/lib/locale/locale-archive";
     POWERLEVEL9K_INSTANT_PROMPT = "quiet";
@@ -142,6 +142,59 @@ in {
     #  enable = true;
     #  enableZshIntegration = true;
     #};
+
+    ssh = {
+      enable = true;
+
+      matchBlocks."*.akamai.com" = {
+        user = "root";
+        forwardAgent = false;
+        forwardX11 = false;
+      };
+
+      matchBlocks."*.akamaitechnologies.com" = {
+        user = "root";
+        forwardAgent = false;
+        forwardX11 = false;
+      };
+
+      matchBlocks."172.25.*" = {
+        user = "root";
+        forwardAgent = false;
+        forwardX11 = false;
+      };
+
+      matchBlocks."172.26.*" = {
+        user = "root";
+        forwardAgent = false;
+        forwardX11 = false;
+      };
+
+      matchBlocks."*.tn.akamai.com" = {
+        user = "root";
+        forwardAgent = false;
+        forwardX11 = false;
+      };
+
+      matchBlocks."*.qa.akamai.com" = {
+        user = "root";
+        forwardAgent = false;
+        forwardX11 = false;
+      };
+
+      matchBlocks."198.18.*" = {
+        user = "root";
+        forwardAgent = false;
+        forwardX11 = false;
+      };
+
+      matchBlocks."198.19.*" = {
+        user = "root";
+        forwardAgent = false;
+        forwardX11 = false;
+      };
+
+    };
 
     taskwarrior = {
       enable = true;
