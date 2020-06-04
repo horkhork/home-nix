@@ -1,7 +1,7 @@
 { pkgs, ... }:
 
 let
-  inherit (pkgs) stdenv which ;
+  inherit (pkgs) stdenv which dpkg ;
 
   homedir = builtins.getEnv "HOME";
   workspace = homedir + "/workspace";
@@ -33,14 +33,31 @@ let
   # Provide various Python packages
   my-python-packages = python-packages: with python-packages; [
     requests
+    #pip
   ];
   python-with-my-packages = pkgs.python3.withPackages my-python-packages;
+
+  # Provide apt within nix to install some things
+  footest = stdenv.mkDerivation {
+    name = "footest";
+
+    unpackPhase = "true";
+
+    buildInputs = [ which dpkg ];
+
+    installPhase = ''
+      echo "STEVE $src $out"
+      mkdir -p "$out/bin"
+      echo "STEVE2 $(which dpkg)"
+    '';
+  };
 
 
 in {
   home.stateVersion = "20.03";
   home.language.base = "en_US.UTF-8";
   home.packages = [
+    footest
     pkgs.asciidoc
     pkgs.curl
     pkgs.file
