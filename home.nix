@@ -1,8 +1,34 @@
 { pkgs, ... }:
 
 let
+  inherit (pkgs) stdenv which ;
+
   homedir = builtins.getEnv "HOME";
   workspace = homedir + "/workspace";
+
+  # TODO
+  # - Create $HOME/workspace
+  # - Use `workspace` command to create component workspaces
+  # - Wrapper for apt
+  # - Install a few Ubuntu things, including CBE and PBRA
+  # - Share .zsh_history across machines
+
+  terraform = stdenv.mkDerivation {
+    name = "terraform-0.12.24";
+
+    unpackPhase = "true";
+
+    src = pkgs.fetchzip {
+      url = "https://releases.hashicorp.com/terraform/0.12.24/terraform_0.12.24_linux_amd64.zip";
+      sha256 = "12hdq2c9pphipr7chdgp91k52rgla22048yhlps6ilpfv8v50467";
+    };
+
+    installPhase = ''
+      mkdir -p "$out/bin"
+      cp $src/terraform $out/bin/.
+    '';
+
+  };
 
 in {
   home.stateVersion = "20.03";
@@ -22,7 +48,8 @@ in {
     pkgs.pv
     pkgs.python3
     pkgs.ripgrep
-    pkgs.terraform
+    #pkgs.terraform
+    terraform
     pkgs.traceroute
     pkgs.unzip
     pkgs.vault
