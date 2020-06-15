@@ -240,8 +240,9 @@ in {
     tmux = {
       enable = true;
       extraConfig = ''
-        set -g default-shell /home/ssosik/.nix-profile/bin/zsh
+        set -g default-shell ${homedir}/.nix-profile/bin/zsh
         set -g default-terminal "xterm-256color"
+        #set-environment -g 'SSH_AUTH_SOCK' ${homedir}/.ssh/ssh_auth_sock
       '';
       keyMode = "vi";
     };
@@ -249,10 +250,10 @@ in {
     vim = {
       enable = true;
       extraConfig = builtins.readFile "${homedir}/.config/nixpkgs/dot.vimrc";
-      #settings = {
-      #   relativenumber = true;
-      #   number = true;
-      #};
+      settings = {
+         relativenumber = true;
+         number = true;
+      };
       plugins = [
         pkgs.vimPlugins.Jenkinsfile-vim-syntax
         pkgs.vimPlugins.ale
@@ -314,6 +315,18 @@ in {
   home.file.".p10k.zsh".text = builtins.readFile "${homedir}/.config/nixpkgs/dot.p10k.zsh";
   home.file.".zshrc".text = builtins.readFile "${homedir}/.config/nixpkgs/dot.zshrc";
   home.file.".envrc".text = ''
+export SSH_AUTH_SOCK=${homedir}/.ssh/ssh_auth_sock
+  '';
+  home.file.".ssh/rc".text = ''
+#!/bin/bash
+if [ -S "$SSH_AUTH_SOCK" ]; then
+  ln -sf $SSH_AUTH_SOCK ${homedir}/.ssh/ssh_auth_sock
+fi
   '';
 
+  services = {
+    lorri = {
+      enable = true;
+    };
+  };
 }
