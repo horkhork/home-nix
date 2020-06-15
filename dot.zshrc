@@ -10,8 +10,8 @@ fi
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-alias vi="vim $@"
-alias pbcopy="echo $@ | tmux load-buffer -"
+alias vi="vim \$@"
+alias pbcopy="tmux load-buffer -"
 alias pbpaste="tmux save-buffer -"
 
 export PATH=$HOME/.cargo/bin:$PATH
