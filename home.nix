@@ -63,9 +63,11 @@ in {
     pkgs.file
     pkgs.gcc
     pkgs.go
+    pkgs.graphviz
     pkgs.htop
     pkgs.httpie
     pkgs.k6
+    pkgs.mailutils
     pkgs.nerdfonts
     pkgs.niv # https://github.com/nmattia/niv
     pkgs.pandoc
@@ -76,6 +78,8 @@ in {
     #pkgs.terraform
     terraform
     pkgs.traceroute
+    pkgs.tree
+    pkgs.ts
     pkgs.unzip
     pkgs.vault
     pkgs.wget
