@@ -11,5 +11,7 @@ fi
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 alias vi="vim $@"
+alias pbcopy="echo $@ | tmux load-buffer -"
+alias pbpaste="tmux save-buffer -"
 
 export PATH=$HOME/.cargo/bin:$PATH
