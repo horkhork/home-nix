@@ -77,6 +77,7 @@ in {
     pkgs.ripgrep
     #pkgs.terraform
     terraform
+    pkgs.timewarrior
     pkgs.traceroute
     pkgs.tree
     pkgs.ts
