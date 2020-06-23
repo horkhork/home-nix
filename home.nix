@@ -317,6 +317,7 @@ in {
   home.file.".zshrc".text = builtins.readFile "${homedir}/.config/nixpkgs/dot.zshrc";
   home.file.".envrc".text = ''
 export SSH_AUTH_SOCK=${homedir}/.ssh/ssh_auth_sock
+export P4PORT="rsh:ssh -2 -q -a -x -l p4source p4.source.akamai.com"
   '';
   home.file.".ssh/rc".text = ''
 #!/bin/bash
