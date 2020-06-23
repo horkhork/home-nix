@@ -68,7 +68,7 @@ in {
     pkgs.httpie
     pkgs.k6
     pkgs.mailutils
-    pkgs.nerdfonts
+    #pkgs.nerdfonts
     pkgs.niv # https://github.com/nmattia/niv
     pkgs.pandoc
     pkgs.pv
