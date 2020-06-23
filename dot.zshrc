@@ -14,4 +14,13 @@ alias vi="vim \$@"
 alias pbcopy="tmux load-buffer -"
 alias pbpaste="tmux save-buffer -"
 
+function pbexec {
+  pbpaste
+  echo "Run it? (y/n)"
+  read runit
+  if [[ $runit == "y" ]] || [[ $runit == "Y" ]] || [[ $runit == "yes" ]] ; then
+    pbpaste | bash
+  fi
+}
+
 export PATH=$HOME/.cargo/bin:$PATH
