@@ -14,6 +14,16 @@ alias vi="vim \$@"
 alias pbcopy="tmux load-buffer -"
 alias pbpaste="tmux save-buffer -"
 
+# Idea from https://gcollazo.com/common-nix-commands-written-in-rust/
+alias cat="bat \$@"
+alias du="dust \$@"
+alias find="fd \$@"
+alias grep="ripgrep \$@"
+alias ls="exa \$@"
+alias ps="procs \$@"
+alias time="hyperfine \$@"
+alias "wc -l"="dust \$@"
+
 function pbexec {
   pbpaste
   echo "Run it? (y/n)"
