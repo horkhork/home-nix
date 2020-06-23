@@ -30,6 +30,11 @@ let
     '';
   };
 
+  #vimdiary = stdenv.mkDerivation {
+  #  name = "vimdiary";
+  #  un
+  #};
+
   # Provide various Python packages
   my-python-packages = python-packages: with python-packages; [
     requests
@@ -60,30 +65,36 @@ in {
     footest
     pkgs.asciidoc
     pkgs.curl
+    pkgs.dust # Rust implementation of 'du'
+    pkgs.exa  # Rust implementation of 'ls'
     pkgs.file
+    pkgs.fd   # Rust implementation of 'find'
+    pkgs.skim # Rust implementation of 'find'
     pkgs.gcc
     pkgs.go
     pkgs.graphviz
     pkgs.htop
     pkgs.httpie
+    pkgs.hyperfine # Rust implementation of 'time'
     pkgs.k6
     pkgs.mailutils
-    #pkgs.nerdfonts
     pkgs.niv # https://github.com/nmattia/niv
     pkgs.pandoc
+    pkgs.procs # Rust implementation of 'ps'
     pkgs.pv
     #pkgs.python3
     python-with-my-packages
     pkgs.ripgrep
-    #pkgs.terraform
-    terraform
+    terraform #pkgs.terraform
     pkgs.timewarrior
+    pkgs.tokei # Rust implementation of 'wc -l'
     pkgs.traceroute
     pkgs.tree
     pkgs.ts
     pkgs.unzip
     pkgs.vault
     pkgs.wget
+    #pkgs.zenith # Rust implementation of 'top'
     pkgs.zsh-powerlevel10k
   ];
 
