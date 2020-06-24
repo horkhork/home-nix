@@ -17,7 +17,7 @@ alias pbpaste="tmux save-buffer -"
 # Idea from https://gcollazo.com/common-nix-commands-written-in-rust/
 alias cat="bat \$@"
 alias du="dust \$@"
-alias find="fd \$@"
+#alias find="fd \$@"
 alias grep="ripgrep \$@"
 alias ls="exa \$@"
 alias ps="procs \$@"

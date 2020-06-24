@@ -30,10 +30,25 @@ let
     '';
   };
 
-  #vimdiary = stdenv.mkDerivation {
-  #  name = "vimdiary";
-  #  un
-  #};
+  vimdiary = stdenv.mkDerivation {
+    name = "vimdiary";
+    buildInputs = [ which pkgs.git pkgs.nix-prefetch-git ] ;
+    #src = builtins.fetchGit { url = "git@github.com:horkhork/vimdiary.git"; };
+    src = pkgs.fetchgit {
+      url = "ssh://git@github.com/horkhork/vimdiary.git";
+      leaveDotGit = true;
+      deepClone = true;
+      sha256 = "12hdq2c9pphipr7chdgp91k52rgla22048yhlps6ilpfv8v50467";
+    };
+    installPhase = ''
+      export SSH_AUTH_SOCK=/home/ssosik/.ssh/ssh_auth_sock
+      echo "STEVE $src $out"
+      #mkdir -p $out
+      #mkdir -p ${homedir}/git
+      ##SSH_AUTH_SOCK=${homedir}/.ssh/ssh_auth_sock $(which git) clone git@github.com:horkhork/vimdiary.git ${homedir}/git/
+      ##SSH_AUTH_SOCK=${homedir}/.ssh/ssh_auth_sock nix-prefetch-git --leave-dotGit --deepClone git@github.com:horkhork/vimdiary.git
+    '';
+  };
 
   # Provide various Python packages
   my-python-packages = python-packages: with python-packages; [
@@ -96,6 +111,7 @@ in {
     pkgs.wget
     #pkgs.zenith # Rust implementation of 'top'
     pkgs.zsh-powerlevel10k
+    #vimdiary
   ];
 
   home.sessionVariables = {
