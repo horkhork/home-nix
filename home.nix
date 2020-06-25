@@ -422,6 +422,21 @@ popd
             theme = "zsh-powerlevel10k/powerlevel10k";
             custom = "${pkgs.zsh-powerlevel10k}/share/";
       };
+      shellAliases = {
+        vi = "vim \$@";
+        pbcopy = "tmux load-buffer -";
+        pbpaste = "tmux save-buffer -";
+
+        # Idea from https://gcollazo.com/common-nix-commands-written-in-rust/
+        cat = "bat \$@";
+        du="dust \$@";
+        #find = "fd \$@";
+        grep="ripgrep \$@";
+        ls = "exa \$@";
+        ps="procs \$@";
+        time = "hyperfine \$@";
+        #"wc -l" = "dust \$@";
+      };
     };
 
   }; # End programs

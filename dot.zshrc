@@ -10,20 +10,6 @@ fi
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-alias vi="vim \$@"
-alias pbcopy="tmux load-buffer -"
-alias pbpaste="tmux save-buffer -"
-
-# Idea from https://gcollazo.com/common-nix-commands-written-in-rust/
-alias cat="bat \$@"
-alias du="dust \$@"
-#alias find="fd \$@"
-alias grep="ripgrep \$@"
-alias ls="exa \$@"
-alias ps="procs \$@"
-alias time="hyperfine \$@"
-alias "wc -l"="dust \$@"
-
 function pbexec {
   pbpaste
   echo "Run it? (y/n)"
