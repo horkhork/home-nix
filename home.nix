@@ -139,11 +139,11 @@ EOF
 fi
 
 # Make my workspace
-if [ ! -e $HOME/workspace ] ; then
-    $DRY_RUN_CMD mkdir -p $HOME/workspace
+if [ ! -e ${workspace} ] ; then
+    $DRY_RUN_CMD mkdir -p ${workspace}
 fi
 
-pushd $HOME/workspace
+pushd ${workspace}
 
 echo "Creating workspaces for Akamai Components: ${builtins.concatStringsSep ", " (lib.attrNames akaComps)}"
 ${builtins.concatStringsSep "\n" (lib.mapAttrsToList
