@@ -7,11 +7,25 @@ let
   whoAmI = builtins.getEnv "USER";
   workspace = homedir + "/workspace";
 
+  # Run the PBRA Workspace tool on for the following component versions if they
+  # don't already exist, creating them under ~/workspace.
+  # https://collaborate.akamai.com/confluence/display/~bailey/PBRA+Tools+Home#PBRAToolsHome-WorkspaceCommand
+  akaComps = {
+    vault = "1.2.3-8.0 alsi9-lite-lib64";
+    vkms_terraform = "1.4 Common";
+    terraform-provider-vault = "2.5.0-1.0 alsi9-lib64";
+  };
+
+  # For each of these, clone the repos under ~/workspace
+  gitRepos = {
+    ab-app-dev = "ssh://git@git.source.akamai.com:7999/syscommcs/ab-app-dev.git";
+    devqa_tools = "ssh://git@git.source.akamai.com:7999/syscomm/devqa_tools";
+    vault-k6-scripts = "ssh://git.source.akamai.com:7999/~ssosik/vault-k6-scripts.git";
+    vkms_performance_testing = "ssh://git@git.source.akamai.com:7999/~pli/vkms_performance_testing.git";
+    vkms-tavern-intg-tests = "ssh://git@git.source.akamai.com:7999/~ssosik/vkms-tavern-intg-tests.git";
+  };
+
   # TODO
-  # - Create $HOME/workspace
-  # - Use `workspace` command to create component workspaces
-  # - Wrapper for apt
-  # - Install a few Ubuntu things, including CBE and PBRA
   # - Share .zsh_history across machines
 
   # Provide a custom version of terraform
@@ -80,53 +94,70 @@ in {
 set -euxo pipefail
 
 # Install required things from apt
-sudo apt-get install -y akamai-sql akamai-nsh
+$DRY_RUN_CMD sudo apt-get install -y akamai-sql akamai-nsh
 
 # Get Testnet cert generator
 if [ ! -e $HOME/generate-dbattery-testnet-certificate  ] ; then
-    p4 print -o generate-dbattery-testnet-certificate //projects/syscomm/tools/generate-dbattery-testnet-certificate
-    ./generate-dbattery-testnet-certificate --skip-validate --pem $USER
-    openssl pkey -in ${whoAmI}-testnet.pem -out ${whoAmI}-testnet.key
+    $DRY_RUN_CMD p4 print -o generate-dbattery-testnet-certificate //projects/syscomm/tools/generate-dbattery-testnet-certificate
+    $DRY_RUN_CMD ./generate-dbattery-testnet-certificate --skip-validate --pem $USER
+    $DRY_RUN_CMD openssl pkey -in ${whoAmI}-testnet.pem -out ${whoAmI}-testnet.key
 fi
 
 # Get Testnet Root CA
 if [ ! -e $HOME/.certs/qa-canonical_ca_roots.pem ] ; then
-    p4 print -o $HOME/.certs/qa-canonical_ca_roots.pem //projects/kmi/netconfig-ssl_ca-qa-1.10/akamai/netconfig-ssl_ca-qa/etc/ssl_ca/canonical_ca_roots.pem
+    $DRY_RUN_CMD p4 print -o $HOME/.certs/qa-canonical_ca_roots.pem //projects/kmi/netconfig-ssl_ca-qa-1.10/akamai/netconfig-ssl_ca-qa/etc/ssl_ca/canonical_ca_roots.pem
 fi
 
 # Install CBE
 if [ ! -e /home/.docker ] ; then
     echo Installing CBE
 
-    sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    sudo apt-key fingerprint 0EBFCD88
-    sudo curl http://junkheap.reston.corp.akamai.com/repos/apt/gpg-key.asc | sudo apt-key add -
-    sudo apt-key fingerprint 20D1FDBCD30DC9F43A89D42D30B7ADFA61BD7044
+    $DRY_RUN_CMD sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    $DRY_RUN_CMD sudo apt-key fingerprint 0EBFCD88
+    $DRY_RUN_CMD sudo curl http://junkheap.reston.corp.akamai.com/repos/apt/gpg-key.asc | sudo apt-key add -
+    $DRY_RUN_CMD sudo apt-key fingerprint 20D1FDBCD30DC9F43A89D42D30B7ADFA61BD7044
 
-    echo "deb [arch=amd64] http://junkheap.reston.corp.akamai.com/repos/apt/ubuntu $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/bart_rest_api.list
-    echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list
+    $DRY_RUN_CMD echo "deb [arch=amd64] http://junkheap.reston.corp.akamai.com/repos/apt/ubuntu $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/bart_rest_api.list
+    $DRY_RUN_CMD echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list
 
-    sudo apt-get update
-    sudo apt-get install -y docker-ce portable-bart-rest-api
+    $DRY_RUN_CMD sudo apt-get update
+    $DRY_RUN_CMD sudo apt-get install -y docker-ce portable-bart-rest-api
 
-    sudo groupadd docker || true
-    sudo usermod -aG docker $USER || true
-    sudo systemctl enable docker
+    $DRY_RUN_CMD sudo groupadd docker || true
+    $DRY_RUN_CMD sudo usermod -aG docker $USER || true
+    $DRY_RUN_CMD sudo systemctl enable docker
 
-    sudo mkdir /home/.docker
-    sudo chmod 750 /home/.docker
-    cat << EOF | sudo tee /etc/docker/daemon.json
+    $DRY_RUN_CMD sudo mkdir /home/.docker
+    $DRY_RUN_CMD sudo chmod 750 /home/.docker
+    $DRY_RUN_CMD cat << EOF | sudo tee /etc/docker/daemon.json
 { "experimental":true, "graph":"/home/.docker", "storage-driver": "overlay2" }
 EOF
 
-    sudo systemctl restart docker
+    $DRY_RUN_CMD sudo systemctl restart docker
 
-    sudo setup_docker_certs --user $USER
+    $DRY_RUN_CMD sudo setup_docker_certs --user $USER
 fi
 
 # Make my workspace
-$DRY_RUN_CMD mkdir -p $HOME/workspace
+if [ ! -e $HOME/workspace ] ; then
+    $DRY_RUN_CMD mkdir -p $HOME/workspace
+fi
+
+pushd $HOME/workspace
+
+echo "Creating workspaces for Akamai Components: ${builtins.concatStringsSep ", " (lib.attrNames akaComps)}"
+${builtins.concatStringsSep "\n" (lib.mapAttrsToList
+      (name: value: "if [ ! -e ./" + name + " ] ; then $DRY_RUN_CMD workspace create " + name + " " + value + " -w " + name + "; fi")
+      akaComps)};
+
+echo "Clone git repos: ${builtins.concatStringsSep ", " (lib.attrNames gitRepos)}"
+${builtins.concatStringsSep "\n" (lib.mapAttrsToList
+      (name: value: "if [ ! -e ./" + name + " ] ; then $DRY_RUN_CMD git clone " + value + " " + name + "; fi")
+      gitRepos)};
+popd
+
     '';
+
   };
 
   home.stateVersion = "20.03";
