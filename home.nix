@@ -1,5 +1,18 @@
 { pkgs, lib, ... }:
 
+# TODO
+# - Share .zsh_history across machines
+# - Get devqa automation tools working through python wrapper
+# - clone ssosik_sandbox perforce repo
+# - clone ssosik_scratch perforce repo
+# - clone metadata perforce repo
+# - double check certs (testnet) are created correctly
+# - create git repo that contains all my helper bash scripts
+# - get vkms-tavern-tests working
+# - Get vimdiary installed and working, with git-sync
+# - Set up monit to email on disk full, or when git-sync fails to run
+# - Integrate with pass
+
 let
   inherit (pkgs) stdenv which dpkg ;
 
@@ -24,9 +37,6 @@ let
     vkms_performance_testing = "ssh://git@git.source.akamai.com:7999/~pli/vkms_performance_testing.git";
     vkms-tavern-intg-tests = "ssh://git@git.source.akamai.com:7999/~ssosik/vkms-tavern-intg-tests.git";
   };
-
-  # TODO
-  # - Share .zsh_history across machines
 
   # Provide a custom version of terraform
   terraform = stdenv.mkDerivation {
