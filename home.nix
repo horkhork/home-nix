@@ -1,9 +1,10 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 let
   inherit (pkgs) stdenv which dpkg ;
 
   homedir = builtins.getEnv "HOME";
+  whoAmI = builtins.getEnv "USER";
   workspace = homedir + "/workspace";
 
   # TODO
@@ -74,6 +75,60 @@ let
 
 
 in {
+  home.activation = {
+    ubuntuSetup = lib.hm.dag.entryAfter ["writeBoundary"] ''
+set -euxo pipefail
+
+# Install required things from apt
+sudo apt-get install -y akamai-sql akamai-nsh
+
+# Get Testnet cert generator
+if [ ! -e $HOME/generate-dbattery-testnet-certificate  ] ; then
+    p4 print -o generate-dbattery-testnet-certificate //projects/syscomm/tools/generate-dbattery-testnet-certificate
+    ./generate-dbattery-testnet-certificate --skip-validate --pem $USER
+    openssl pkey -in ${whoAmI}-testnet.pem -out ${whoAmI}-testnet.key
+fi
+
+# Get Testnet Root CA
+if [ ! -e $HOME/.certs/qa-canonical_ca_roots.pem ] ; then
+    p4 print -o $HOME/.certs/qa-canonical_ca_roots.pem //projects/kmi/netconfig-ssl_ca-qa-1.10/akamai/netconfig-ssl_ca-qa/etc/ssl_ca/canonical_ca_roots.pem
+fi
+
+# Install CBE
+if [ ! -e /home/.docker ] ; then
+    echo Installing CBE
+
+    sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    sudo apt-key fingerprint 0EBFCD88
+    sudo curl http://junkheap.reston.corp.akamai.com/repos/apt/gpg-key.asc | sudo apt-key add -
+    sudo apt-key fingerprint 20D1FDBCD30DC9F43A89D42D30B7ADFA61BD7044
+
+    echo "deb [arch=amd64] http://junkheap.reston.corp.akamai.com/repos/apt/ubuntu $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/bart_rest_api.list
+    echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list
+
+    sudo apt-get update
+    sudo apt-get install -y docker-ce portable-bart-rest-api
+
+    sudo groupadd docker || true
+    sudo usermod -aG docker $USER || true
+    sudo systemctl enable docker
+
+    sudo mkdir /home/.docker
+    sudo chmod 750 /home/.docker
+    cat << EOF | sudo tee /etc/docker/daemon.json
+{ "experimental":true, "graph":"/home/.docker", "storage-driver": "overlay2" }
+EOF
+
+    sudo systemctl restart docker
+
+    sudo setup_docker_certs --user $USER
+fi
+
+# Make my workspace
+$DRY_RUN_CMD mkdir -p $HOME/workspace
+    '';
+  };
+
   home.stateVersion = "20.03";
   home.language.base = "en_US.UTF-8";
   home.packages = [
