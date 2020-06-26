@@ -42,14 +42,11 @@ let
   # Provide a custom version of terraform
   terraform = stdenv.mkDerivation {
     name = "terraform-0.12.24";
-
     unpackPhase = "true";
-
     src = pkgs.fetchzip {
       url = "https://releases.hashicorp.com/terraform/0.12.24/terraform_0.12.24_linux_amd64.zip";
       sha256 = "12hdq2c9pphipr7chdgp91k52rgla22048yhlps6ilpfv8v50467";
     };
-
     installPhase = ''
       mkdir -p "$out/bin"
       cp $src/terraform $out/bin/.
@@ -85,11 +82,8 @@ let
   # Provide apt within nix to install some things
   footest = stdenv.mkDerivation {
     name = "footest";
-
     unpackPhase = "true";
-
     buildInputs = [ which dpkg ];
-
     installPhase = ''
       echo "STEVE $src $out"
       mkdir -p "$out/bin"
@@ -100,14 +94,11 @@ let
   # Provide a custom version of terraform
   helpers = stdenv.mkDerivation {
     name = "shell-helpers";
-
     unpackPhase = "true";
-
     src = builtins.fetchGit {
       url = "ssh://git@git.source.akamai.com:7999/~ssosik/shell-helpers.git";
       ref = "master";
     };
-
     installPhase = ''
       mkdir -p "$out/bin"
       cp $src/* $out/bin/.
@@ -174,6 +165,7 @@ if [ ! -e ./generate-dbattery-testnet-certificate  ] ; then
     for U in $USER dhafeman gzaidenw ; do
         $DRY_RUN_CMD ./generate-dbattery-testnet-certificate --skip-validate --pem $U
         $DRY_RUN_CMD openssl pkey -in $U-testnet.pem -out $U-testnet.key
+        $DRY_RUN_CMD openssl x509 -in $U-testnet.pem -out $U-testnet.crt
     done
 fi
 popd
@@ -345,15 +337,13 @@ P4_rsh:ssh -q -a -x -l p4ssh p4.source.akamai.com /bin/true:1699_CHARSET=none
         forwardAgent = false;
         forwardX11 = false;
       };
-      matchBlocks."172.25.*" = {
+      matchBlocks."172.*" = {
         user = "root";
         forwardAgent = false;
         forwardX11 = false;
-      };
-      matchBlocks."172.26.*" = {
-        user = "root";
-        forwardAgent = false;
-        forwardX11 = false;
+        extraOptions = {
+          StrictHostKeyChecking = "no";
+        };
       };
       matchBlocks."*.tn.akamai.com" = {
         user = "root";
@@ -369,11 +359,17 @@ P4_rsh:ssh -q -a -x -l p4ssh p4.source.akamai.com /bin/true:1699_CHARSET=none
         user = "root";
         forwardAgent = false;
         forwardX11 = false;
+        extraOptions = {
+          StrictHostKeyChecking = "no";
+        };
       };
       matchBlocks."198.19.*" = {
         user = "root";
         forwardAgent = false;
         forwardX11 = false;
+        extraOptions = {
+          StrictHostKeyChecking = "no";
+        };
       };
     };
 
