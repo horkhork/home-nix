@@ -102,41 +102,45 @@ let
 in {
   home.stateVersion = "20.03";
   home.language.base = "en_US.UTF-8";
-  home.packages = [
+  home.packages = with pkgs; [
+    # Standard packages from the pkgs.* namespace
+    asciidoc
+    curl
+    dust # Rust implementation of 'du'
+    exa  # Rust implementation of 'ls'
+    file
+    fd   # Rust implementation of 'find'
+    skim # Rust implementation of 'find'
+    gcc
+    go
+    graphviz
+    htop
+    httpie
+    hyperfine # Rust implementation of 'time'
+    k6
+    mailutils
+    niv # https://github.com/nmattia/niv
+    pandoc
+    procs # Rust implementation of 'ps'
+    pv
+    #python3
+    ripgrep
+    #terraform
+    timewarrior
+    tokei # Rust implementation of 'wc -l'
+    traceroute
+    tree
+    ts
+    unzip
+    vault
+    wget
+    #zenith # Rust implementation of 'top'
+    zsh-powerlevel10k
+  ] ++ [
+    # Custom packages
     footest
-    pkgs.asciidoc
-    pkgs.curl
-    pkgs.dust # Rust implementation of 'du'
-    pkgs.exa  # Rust implementation of 'ls'
-    pkgs.file
-    pkgs.fd   # Rust implementation of 'find'
-    pkgs.skim # Rust implementation of 'find'
-    pkgs.gcc
-    pkgs.go
-    pkgs.graphviz
-    pkgs.htop
-    pkgs.httpie
-    pkgs.hyperfine # Rust implementation of 'time'
-    pkgs.k6
-    pkgs.mailutils
-    pkgs.niv # https://github.com/nmattia/niv
-    pkgs.pandoc
-    pkgs.procs # Rust implementation of 'ps'
-    pkgs.pv
-    #pkgs.python3
+    terraform
     python-with-my-packages
-    pkgs.ripgrep
-    terraform #pkgs.terraform
-    pkgs.timewarrior
-    pkgs.tokei # Rust implementation of 'wc -l'
-    pkgs.traceroute
-    pkgs.tree
-    pkgs.ts
-    pkgs.unzip
-    pkgs.vault
-    pkgs.wget
-    #pkgs.zenith # Rust implementation of 'top'
-    pkgs.zsh-powerlevel10k
     #vimdiary
   ];
 
@@ -208,7 +212,6 @@ ${builtins.concatStringsSep "\n" (lib.mapAttrsToList
 popd
 
     '';
-
   };
 
   home.file.".p10k.zsh".text = builtins.readFile "${homedir}/.config/nixpkgs/dot.p10k.zsh";
@@ -227,7 +230,7 @@ fi
   home.sessionVariables = {
     NIX_PATH = "${homedir}/.nix-defexpr/channels";
     NIX_PROFILES = "${homedir}/.nix-profile";
-    PATH = "${homedir}/.nix-profile/bin:${homedir}/bin:$PATH";
+    PATH = "${homedir}/.nix-profile/bin:${homedir}/bin:${homedir}/.cargo/bin:$PATH";
     SHELL = "${homedir}/.nix-profile/bin/zsh";
     LOCALE_ARCHIVE = "/usr/lib/locale/locale-archive";
     POWERLEVEL9K_INSTANT_PROMPT = "quiet";
@@ -307,55 +310,46 @@ fi
 
     ssh = {
       enable = true;
-
       matchBlocks."*.akamai.com" = {
         user = "root";
         forwardAgent = false;
         forwardX11 = false;
       };
-
       matchBlocks."*.akamaitechnologies.com" = {
         user = "root";
         forwardAgent = false;
         forwardX11 = false;
       };
-
       matchBlocks."172.25.*" = {
         user = "root";
         forwardAgent = false;
         forwardX11 = false;
       };
-
       matchBlocks."172.26.*" = {
         user = "root";
         forwardAgent = false;
         forwardX11 = false;
       };
-
       matchBlocks."*.tn.akamai.com" = {
         user = "root";
         forwardAgent = false;
         forwardX11 = false;
       };
-
       matchBlocks."*.qa.akamai.com" = {
         user = "root";
         forwardAgent = false;
         forwardX11 = false;
       };
-
       matchBlocks."198.18.*" = {
         user = "root";
         forwardAgent = false;
         forwardX11 = false;
       };
-
       matchBlocks."198.19.*" = {
         user = "root";
         forwardAgent = false;
         forwardX11 = false;
       };
-
     };
 
     taskwarrior = {
@@ -375,7 +369,6 @@ fi
       extraConfig = ''
         set -g default-shell ${homedir}/.nix-profile/bin/zsh
         set -g default-terminal "xterm-256color"
-        #set-environment -g 'SSH_AUTH_SOCK' ${homedir}/.ssh/ssh_auth_sock
       '';
       keyMode = "vi";
     };
@@ -387,40 +380,40 @@ fi
          relativenumber = true;
          number = true;
       };
-      plugins = [
-        pkgs.vimPlugins.Jenkinsfile-vim-syntax
-        pkgs.vimPlugins.ale
-        pkgs.vimPlugins.ansible-vim
-        pkgs.vimPlugins.calendar-vim
-        pkgs.vimPlugins.direnv-vim
-        pkgs.vimPlugins.emmet-vim
-        pkgs.vimPlugins.fzf-vim
-        pkgs.vimPlugins.goyo-vim
-        pkgs.vimPlugins.jedi-vim
-        pkgs.vimPlugins.jq-vim
-        pkgs.vimPlugins.molokai
-        pkgs.vimPlugins.nerdcommenter
-        pkgs.vimPlugins.nerdtree
-        pkgs.vimPlugins.nerdtree-git-plugin
-        pkgs.vimPlugins.rust-vim
-        pkgs.vimPlugins.tabular
-        pkgs.vimPlugins.vim-airline
-        pkgs.vimPlugins.vim-airline-themes
-        pkgs.vimPlugins.vim-devicons
-        pkgs.vimPlugins.vim-eunuch
-        pkgs.vimPlugins.vim-fugitive
-        pkgs.vimPlugins.vim-gitgutter
-        pkgs.vimPlugins.vim-go
-        pkgs.vimPlugins.vim-markdown
-        pkgs.vimPlugins.vim-multiple-cursors
-        pkgs.vimPlugins.vim-nix
-        pkgs.vimPlugins.vim-plug
-        pkgs.vimPlugins.vim-repeat
-        pkgs.vimPlugins.vim-sensible
-        pkgs.vimPlugins.vim-speeddating
-        pkgs.vimPlugins.vim-surround
-        pkgs.vimPlugins.vim-terraform
-        pkgs.vimPlugins.vim-unimpaired
+      plugins = with pkgs.vimPlugins; [
+        Jenkinsfile-vim-syntax
+        ale
+        ansible-vim
+        calendar-vim
+        direnv-vim
+        emmet-vim
+        fzf-vim
+        goyo-vim
+        jedi-vim
+        jq-vim
+        molokai
+        nerdcommenter
+        nerdtree
+        nerdtree-git-plugin
+        rust-vim
+        tabular
+        vim-airline
+        vim-airline-themes
+        vim-devicons
+        vim-eunuch
+        vim-fugitive
+        vim-gitgutter
+        vim-go
+        vim-markdown
+        vim-multiple-cursors
+        vim-nix
+        vim-plug
+        vim-repeat
+        vim-sensible
+        vim-speeddating
+        vim-surround
+        vim-terraform
+        vim-unimpaired
       ];
     };
 
@@ -445,12 +438,11 @@ fi
         vi = "vim \$@";
         pbcopy = "tmux load-buffer -";
         pbpaste = "tmux save-buffer -";
-
         # Idea from https://gcollazo.com/common-nix-commands-written-in-rust/
         cat = "bat \$@";
         du="dust \$@";
         #find = "fd \$@";
-        grep="ripgrep \$@";
+        grep="rg \$@";
         ls = "exa \$@";
         ps="procs \$@";
         time = "hyperfine \$@";
