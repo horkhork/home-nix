@@ -68,7 +68,6 @@ let
     };
     installPhase = ''
       export SSH_AUTH_SOCK=/home/ssosik/.ssh/ssh_auth_sock
-      echo "STEVE $src $out"
       #mkdir -p $out
       #mkdir -p ${homedir}/git
       ##SSH_AUTH_SOCK=${homedir}/.ssh/ssh_auth_sock $(which git) clone git@github.com:horkhork/vimdiary.git ${homedir}/git/
@@ -95,6 +94,23 @@ let
       echo "STEVE $src $out"
       mkdir -p "$out/bin"
       echo "STEVE2 $(which dpkg)"
+    '';
+  };
+
+  # Provide a custom version of terraform
+  helpers = stdenv.mkDerivation {
+    name = "shell-helpers";
+
+    unpackPhase = "true";
+
+    src = builtins.fetchGit {
+      url = "ssh://git@git.source.akamai.com:7999/~ssosik/shell-helpers.git";
+      ref = "master";
+    };
+
+    installPhase = ''
+      mkdir -p "$out/bin"
+      cp $src/* $out/bin/.
     '';
   };
 
@@ -138,7 +154,7 @@ in {
     zsh-powerlevel10k
   ] ++ [
     # Custom packages
-    footest
+    helpers
     terraform
     python-with-my-packages
     #vimdiary
@@ -152,11 +168,15 @@ set -euxo pipefail
 $DRY_RUN_CMD sudo apt-get install -y akamai-sql akamai-nsh
 
 # Get Testnet cert generator
-if [ ! -e $HOME/generate-dbattery-testnet-certificate  ] ; then
+pushd $HOME/.certs
+if [ ! -e ./generate-dbattery-testnet-certificate  ] ; then
     $DRY_RUN_CMD p4 print -o generate-dbattery-testnet-certificate //projects/syscomm/tools/generate-dbattery-testnet-certificate
-    $DRY_RUN_CMD ./generate-dbattery-testnet-certificate --skip-validate --pem $USER
-    $DRY_RUN_CMD openssl pkey -in ${whoAmI}-testnet.pem -out ${whoAmI}-testnet.key
+    for U in $USER dhafeman gzaidenw ; do
+        $DRY_RUN_CMD ./generate-dbattery-testnet-certificate --skip-validate --pem $U
+        $DRY_RUN_CMD openssl pkey -in $U-testnet.pem -out $U-testnet.key
+    done
 fi
+popd
 
 # Get Testnet Root CA
 if [ ! -e $HOME/.certs/qa-canonical_ca_roots.pem ] ; then
@@ -225,6 +245,11 @@ export P4PORT="rsh:ssh -2 -q -a -x -l p4source p4.source.akamai.com"
 if [ -S "$SSH_AUTH_SOCK" ]; then
   ln -sf $SSH_AUTH_SOCK ${homedir}/.ssh/ssh_auth_sock
 fi
+  '';
+  home.file.".p4enviro".text = ''
+P4_rsh:ssh -2 -q -a -x -l p4source p4.source.akamai.com_CHARSET=none
+P4_rsh:ssh -2 -a -l p4ops -q -x p4.ops.akamai.com /bin/true_CHARSET=none
+P4_rsh:ssh -q -a -x -l p4ssh p4.source.akamai.com /bin/true:1699_CHARSET=none
   '';
 
   home.sessionVariables = {
@@ -444,6 +469,7 @@ fi
         #find = "fd \$@";
         grep="rg \$@";
         ls = "exa \$@";
+        "ls -latr" = "exa -lars modified\$@";
         ps="procs \$@";
         time = "hyperfine \$@";
         #"wc -l" = "dust \$@";
