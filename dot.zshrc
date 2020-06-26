@@ -18,5 +18,3 @@ function pbexec {
     pbpaste | bash
   fi
 }
-
-export PATH=$HOME/.cargo/bin:$PATH

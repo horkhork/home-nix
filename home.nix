@@ -12,6 +12,7 @@
 # - Get vimdiary installed and working, with git-sync
 # - Set up monit to email on disk full, or when git-sync fails to run
 # - Integrate with pass
+# - Move home.nix into a git.sources repo
 
 let
   inherit (pkgs) stdenv which dpkg ;
@@ -99,6 +100,46 @@ let
 
 
 in {
+  home.stateVersion = "20.03";
+  home.language.base = "en_US.UTF-8";
+  home.packages = [
+    footest
+    pkgs.asciidoc
+    pkgs.curl
+    pkgs.dust # Rust implementation of 'du'
+    pkgs.exa  # Rust implementation of 'ls'
+    pkgs.file
+    pkgs.fd   # Rust implementation of 'find'
+    pkgs.skim # Rust implementation of 'find'
+    pkgs.gcc
+    pkgs.go
+    pkgs.graphviz
+    pkgs.htop
+    pkgs.httpie
+    pkgs.hyperfine # Rust implementation of 'time'
+    pkgs.k6
+    pkgs.mailutils
+    pkgs.niv # https://github.com/nmattia/niv
+    pkgs.pandoc
+    pkgs.procs # Rust implementation of 'ps'
+    pkgs.pv
+    #pkgs.python3
+    python-with-my-packages
+    pkgs.ripgrep
+    terraform #pkgs.terraform
+    pkgs.timewarrior
+    pkgs.tokei # Rust implementation of 'wc -l'
+    pkgs.traceroute
+    pkgs.tree
+    pkgs.ts
+    pkgs.unzip
+    pkgs.vault
+    pkgs.wget
+    #pkgs.zenith # Rust implementation of 'top'
+    pkgs.zsh-powerlevel10k
+    #vimdiary
+  ];
+
   home.activation = {
     ubuntuSetup = lib.hm.dag.entryAfter ["writeBoundary"] ''
 set -euxo pipefail
@@ -170,58 +211,26 @@ popd
 
   };
 
-  home.stateVersion = "20.03";
-  home.language.base = "en_US.UTF-8";
-  home.packages = [
-    footest
-    pkgs.asciidoc
-    pkgs.curl
-    pkgs.dust # Rust implementation of 'du'
-    pkgs.exa  # Rust implementation of 'ls'
-    pkgs.file
-    pkgs.fd   # Rust implementation of 'find'
-    pkgs.skim # Rust implementation of 'find'
-    pkgs.gcc
-    pkgs.go
-    pkgs.graphviz
-    pkgs.htop
-    pkgs.httpie
-    pkgs.hyperfine # Rust implementation of 'time'
-    pkgs.k6
-    pkgs.mailutils
-    pkgs.niv # https://github.com/nmattia/niv
-    pkgs.pandoc
-    pkgs.procs # Rust implementation of 'ps'
-    pkgs.pv
-    #pkgs.python3
-    python-with-my-packages
-    pkgs.ripgrep
-    terraform #pkgs.terraform
-    pkgs.timewarrior
-    pkgs.tokei # Rust implementation of 'wc -l'
-    pkgs.traceroute
-    pkgs.tree
-    pkgs.ts
-    pkgs.unzip
-    pkgs.vault
-    pkgs.wget
-    #pkgs.zenith # Rust implementation of 'top'
-    pkgs.zsh-powerlevel10k
-    #vimdiary
-  ];
+  home.file.".p10k.zsh".text = builtins.readFile "${homedir}/.config/nixpkgs/dot.p10k.zsh";
+  home.file.".zshrc".text = builtins.readFile "${homedir}/.config/nixpkgs/dot.zshrc";
+  home.file.".envrc".text = ''
+export SSH_AUTH_SOCK=${homedir}/.ssh/ssh_auth_sock
+export P4PORT="rsh:ssh -2 -q -a -x -l p4source p4.source.akamai.com"
+  '';
+  home.file.".ssh/rc".text = ''
+#!/bin/bash
+if [ -S "$SSH_AUTH_SOCK" ]; then
+  ln -sf $SSH_AUTH_SOCK ${homedir}/.ssh/ssh_auth_sock
+fi
+  '';
 
   home.sessionVariables = {
     NIX_PATH = "${homedir}/.nix-defexpr/channels";
-    #NIX_PROFILES = "/nix/var/nix/profiles/default ${homedir}/.nix-profile";
     NIX_PROFILES = "${homedir}/.nix-profile";
     PATH = "${homedir}/.nix-profile/bin:${homedir}/bin:$PATH";
     SHELL = "${homedir}/.nix-profile/bin/zsh";
     LOCALE_ARCHIVE = "/usr/lib/locale/locale-archive";
     POWERLEVEL9K_INSTANT_PROMPT = "quiet";
-    #LESSCLOSE = "/usr/bin/lesspipe %s %s";
-    #LESSOPEN =| "/usr/bin/lesspipe %s";
-    #NIX_SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
-    #NSS_DEFAULT_DB_TYPE = "sql";
   };
 
   programs = {
@@ -450,19 +459,6 @@ popd
     };
 
   }; # End programs
-
-  home.file.".p10k.zsh".text = builtins.readFile "${homedir}/.config/nixpkgs/dot.p10k.zsh";
-  home.file.".zshrc".text = builtins.readFile "${homedir}/.config/nixpkgs/dot.zshrc";
-  home.file.".envrc".text = ''
-export SSH_AUTH_SOCK=${homedir}/.ssh/ssh_auth_sock
-export P4PORT="rsh:ssh -2 -q -a -x -l p4source p4.source.akamai.com"
-  '';
-  home.file.".ssh/rc".text = ''
-#!/bin/bash
-if [ -S "$SSH_AUTH_SOCK" ]; then
-  ln -sf $SSH_AUTH_SOCK ${homedir}/.ssh/ssh_auth_sock
-fi
-  '';
 
   services = {
     lorri = {
