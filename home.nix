@@ -105,6 +105,20 @@ let
     '';
   };
 
+  # Read a specific file out of a tgz under /u1/bundles
+  tf-vault-provider-plugin = stdenv.mkDerivation {
+    name = "tf-vault-provider-plugin";
+    unpackPhase = "true";
+    src = null;
+    installPhase = ''
+      mkdir -p "$out"
+      tar -zvf /u1/bundles/projects/shared/components/alsi9/terraform-provider-vault-2.5.0-1.0/terraform-provider-vault.tgz -C $out/. --get ./terraform-provider-vault
+      echo $out
+      ls $out
+      #cp $src/* $out/bin/.
+    '';
+  };
+
 
 in {
   home.stateVersion = "20.03";
@@ -148,32 +162,42 @@ in {
     helpers
     terraform
     python-with-my-packages
+    #tf-vault-provider-plugin
     #vimdiary
   ];
 
   home.activation = {
+    # All these dirty things that Nix/Home Manager won't let me do
+    # TODO wrap some of these steps in derivations to make things more
+    # composable
     ubuntuSetup = lib.hm.dag.entryAfter ["writeBoundary"] ''
 set -euxo pipefail
 
 # Install required things from apt
 $DRY_RUN_CMD sudo apt-get install -y akamai-sql akamai-nsh
 
-# Get Testnet cert generator
+# Set up certs
 pushd $HOME/.certs
 if [ ! -e ./generate-dbattery-testnet-certificate  ] ; then
+    # Get Testnet cert generator
     $DRY_RUN_CMD p4 print -o generate-dbattery-testnet-certificate //projects/syscomm/tools/generate-dbattery-testnet-certificate
-    for U in $USER dhafeman gzaidenw ; do
+fi
+
+for U in $USER dhafeman gzaidenw ; do
+    if [ ! -e ./$U-testnet.crt  ] ; then
         $DRY_RUN_CMD ./generate-dbattery-testnet-certificate --skip-validate --pem $U
         $DRY_RUN_CMD openssl pkey -in $U-testnet.pem -out $U-testnet.key
         $DRY_RUN_CMD openssl x509 -in $U-testnet.pem -out $U-testnet.crt
-    done
-fi
-popd
+    fi
+done
 
 # Get Testnet Root CA
-if [ ! -e $HOME/.certs/qa-canonical_ca_roots.pem ] ; then
-    $DRY_RUN_CMD p4 print -o $HOME/.certs/qa-canonical_ca_roots.pem //projects/kmi/netconfig-ssl_ca-qa-1.10/akamai/netconfig-ssl_ca-qa/etc/ssl_ca/canonical_ca_roots.pem
+if [ ! -e $HOME/.certs/nss1-canonical_ca_roots.pem ] ; then
+    $DRY_RUN_CMD p4 print -o $HOME/.certs/nss1-canonical_ca_roots.pem //projects/kmi/netconfig-ssl_ca-qa-1.10/akamai/netconfig-ssl_ca-qa/etc/ssl_ca/canonical_ca_roots.pem
 fi
+
+cat $USER.crt root_certs.pem > $USER.combined.crt
+popd
 
 # Install CBE
 if [ ! -e /home/.docker ] ; then
@@ -223,6 +247,10 @@ ${builtins.concatStringsSep "\n" (lib.mapAttrsToList
       gitRepos)};
 popd
 
+mkdir -p $HOME/.terraform.d/plugins
+if [ ! -e $HOME/.terraform.d/plugins/terraform-provider-vault ] ; then
+    tar -zvf /u1/bundles/projects/shared/components/alsi9/terraform-provider-vault-2.5.0-1.0/terraform-provider-vault.tgz -C $HOME/.terraform.d/plugins/ --get ./terraform-provider-vault
+fi
     '';
   };
 
@@ -243,6 +271,7 @@ P4_rsh:ssh -2 -q -a -x -l p4source p4.source.akamai.com_CHARSET=none
 P4_rsh:ssh -2 -a -l p4ops -q -x p4.ops.akamai.com /bin/true_CHARSET=none
 P4_rsh:ssh -q -a -x -l p4ssh p4.source.akamai.com /bin/true:1699_CHARSET=none
   '';
+  #home.file.".terraform.d/plugins/terraform-provider-vault".text = builtins.readFile  "";
 
   home.sessionVariables = {
     NIX_PATH = "${homedir}/.nix-defexpr/channels";
