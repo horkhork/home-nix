@@ -120,6 +120,32 @@ let
   };
 
 
+  # Create a specific P4 client
+  p4-metadata = stdenv.mkDerivation {
+    name = "p4-metadata";
+    buildInputs = [ which pkgs.direnv ] ;
+    unpackPhase = "true";
+    src = null;
+    installPhase = ''
+      mkdir -p "$out"
+      echo $out
+      cat <<EOF > $out/.envrc
+source_up
+dotenv .perforce
+export P4PORT='rsh:ssh -2 -q -a -x -l p4ssh1681 perforce.akamai.com /bin/true'
+EOF
+      cat <<EOF > $out/.perforce
+P4CLIENT=ssosik_ump_metadata
+EOF
+      ls -latr $out
+      cd $out
+      $(which direnv) allow
+      echo STEVE
+      echo "p4 client -t ssosik_ump_test_depots -o | p4 client -i"
+    '';
+  };
+
+
 in {
   home.stateVersion = "20.03";
   home.language.base = "en_US.UTF-8";
@@ -162,6 +188,7 @@ in {
     helpers
     terraform
     python-with-my-packages
+    p4-metadata
     #tf-vault-provider-plugin
     #vimdiary
   ];
@@ -270,6 +297,7 @@ fi
 P4_rsh:ssh -2 -q -a -x -l p4source p4.source.akamai.com_CHARSET=none
 P4_rsh:ssh -2 -a -l p4ops -q -x p4.ops.akamai.com /bin/true_CHARSET=none
 P4_rsh:ssh -q -a -x -l p4ssh p4.source.akamai.com /bin/true:1699_CHARSET=none
+P4_rsh:ssh -2 -q -a -x -l p4ssh1681 perforce.akamai.com /bin/true_CHARSET=none
   '';
   #home.file.".terraform.d/plugins/terraform-provider-vault".text = builtins.readFile  "";
 
