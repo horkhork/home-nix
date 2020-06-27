@@ -79,15 +79,40 @@ let
   ];
   python-with-my-packages = pkgs.python3.withPackages my-python-packages;
 
+  # Perforce client
+  p4 = stdenv.mkDerivation {
+    name = "Perforce-client";
+    unpackPhase = "true";
+    buildInputs = [ which dpkg ];
+    src = builtins.fetchurl {
+      url = "https://atlantis.akamai.com/ubuntu/akamai/bionic/perforce-client_20140929_amd64.deb";
+    };
+    installPhase = ''
+      mkdir -p "$out/bin"
+      TMP=$(mktemp -d -p $out)
+      $(which dpkg-deb) -xv $src $TMP/
+      cp $TMP/usr/bin/p4 $out/bin/.
+      rm -rf $TMP
+    '';
+  };
+
   # Provide apt within nix to install some things
   footest = stdenv.mkDerivation {
     name = "footest";
     unpackPhase = "true";
     buildInputs = [ which dpkg ];
+    src = builtins.fetchurl {
+      url = "https://atlantis.akamai.com/ubuntu/akamai/bionic/perforce-client_20140929_amd64.deb";
+    };
     installPhase = ''
       echo "STEVE $src $out"
       mkdir -p "$out/bin"
-      echo "STEVE2 $(which dpkg)"
+      ls $src
+      #$(which dpkg) --unpack --dry-run $src
+      $(which dpkg-deb) -xv $src $out/
+      cp $src/usr/bin/p4
+      #ar x $src
+      #echo "STEVE2 $(which dpkg)"
     '';
   };
 
@@ -185,6 +210,7 @@ in {
     zsh-powerlevel10k
   ] ++ [
     # Custom packages
+    p4
     helpers
     terraform
     python-with-my-packages
