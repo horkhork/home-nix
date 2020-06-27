@@ -90,7 +90,7 @@ let
     installPhase = ''
       mkdir -p "$out/bin"
       TMP=$(mktemp -d -p $out)
-      $(which dpkg-deb) -xv $src $TMP/
+      dpkg-deb -xv $src $TMP/
       cp $TMP/usr/bin/p4 $out/bin/.
       rm -rf $TMP
     '';
@@ -148,9 +148,9 @@ let
   # Create a specific P4 client
   p4-metadata = stdenv.mkDerivation {
     name = "p4-metadata";
-    buildInputs = [ which pkgs.direnv ] ;
+    buildInputs = [ which pkgs.direnv p4 ] ;
+    #propagatedBuildInputs = [ ];
     unpackPhase = "true";
-    src = null;
     installPhase = ''
       mkdir -p "$out"
       echo $out
@@ -167,6 +167,8 @@ EOF
       $(which direnv) allow
       echo STEVE
       echo "p4 client -t ssosik_ump_test_depots -o | p4 client -i"
+      #$(which p4) client -t ssosik_ump_test_depots -o | p4 client -i
+      $(which p4) client -t ssosik_ump_test_depots -o
     '';
   };
 
