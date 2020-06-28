@@ -83,7 +83,7 @@ let
   p4 = stdenv.mkDerivation {
     name = "Perforce-client";
     unpackPhase = "true";
-    buildInputs = [ which dpkg ];
+    buildInputs = [ dpkg ];
     src = builtins.fetchurl {
       url = "https://atlantis.akamai.com/ubuntu/akamai/bionic/perforce-client_20140929_amd64.deb";
     };
@@ -144,14 +144,15 @@ let
     '';
   };
 
-
   # Create a specific P4 client
   p4-metadata = stdenv.mkDerivation {
     name = "p4-metadata";
     buildInputs = [ which pkgs.direnv p4 ] ;
     #propagatedBuildInputs = [ ];
-    unpackPhase = "true";
-    installPhase = ''
+    #unpackPhase = "true";
+    #installPhase = ''
+    inherit p4;
+    unpackPhase = ''
       mkdir -p "$out"
       echo $out
       cat <<EOF > $out/.envrc
@@ -164,11 +165,12 @@ P4CLIENT=ssosik_ump_metadata
 EOF
       ls -latr $out
       cd $out
-      $(which direnv) allow
+      direnv allow
       echo STEVE
       echo "p4 client -t ssosik_ump_test_depots -o | p4 client -i"
       #$(which p4) client -t ssosik_ump_test_depots -o | p4 client -i
-      $(which p4) client -t ssosik_ump_test_depots -o
+      #$(which p4) client -t ssosik_ump_test_depots -o
+      p4 client ssosik_ump_test_depots -o
     '';
   };
 
