@@ -148,6 +148,7 @@ let
   p4-metadata = stdenv.mkDerivation {
     name = "p4-metadata";
     buildInputs = [ which pkgs.direnv p4 ] ;
+    __noChroot = true;
     #propagatedBuildInputs = [ ];
     #unpackPhase = "true";
     #installPhase = ''
@@ -165,12 +166,13 @@ P4CLIENT=ssosik_ump_metadata
 EOF
       ls -latr $out
       cd $out
-      direnv allow
+      #direnv allow
       echo STEVE
+      export P4PORT="rsh:ssh -2 -q -a -x -l p4ssh1681 perforce.akamai.com /bin/true"
       echo "p4 client -t ssosik_ump_test_depots -o | p4 client -i"
       #$(which p4) client -t ssosik_ump_test_depots -o | p4 client -i
       #$(which p4) client -t ssosik_ump_test_depots -o
-      p4 client ssosik_ump_test_depots -o
+      P4PORT="rsh:ssh -2 -q -a -x -l p4ssh1681 perforce.akamai.com /bin/true" p4 client ssosik_ump_test_depots -o
     '';
   };
 
@@ -218,7 +220,7 @@ in {
     helpers
     terraform
     python-with-my-packages
-    p4-metadata
+    #p4-metadata
     #tf-vault-provider-plugin
     #vimdiary
   ];
@@ -308,6 +310,20 @@ mkdir -p $HOME/.terraform.d/plugins
 if [ ! -e $HOME/.terraform.d/plugins/terraform-provider-vault ] ; then
     tar -zvf /u1/bundles/projects/shared/components/alsi9/terraform-provider-vault-2.5.0-1.0/terraform-provider-vault.tgz -C $HOME/.terraform.d/plugins/ --get ./terraform-provider-vault
 fi
+
+#if [ ! -e $HOME/workspace/metadata ] ; then
+#    mkdir -p $HOME/workspace/metadata
+#    cd $HOME/workspace/metadata/
+#    cat <<EOF > .perforce
+#P4CLIENT=ssosik_ump_metadata
+#EOF
+#    cat <<EOF > .envrc
+#source_up
+#dotenv .perforce
+#export P4PORT='rsh:ssh -2 -q -a -x -l p4ssh1681 perforce.akamai.com /bin/true'
+#EOF
+#    P4PORT="rsh:ssh -2 -q -a -x -l p4ssh1681 perforce.akamai.com /bin/true" p4 client -t ssosik_ump_test_depots -o | p4 client -i
+#fi
     '';
   };
 
@@ -330,6 +346,9 @@ P4_rsh:ssh -q -a -x -l p4ssh p4.source.akamai.com /bin/true:1699_CHARSET=none
 P4_rsh:ssh -2 -q -a -x -l p4ssh1681 perforce.akamai.com /bin/true_CHARSET=none
   '';
   #home.file.".terraform.d/plugins/terraform-provider-vault".text = builtins.readFile  "";
+  home.file.".config/nix/nix.conf".text = ''
+    sandbox = relaxed
+  '';
 
   home.sessionVariables = {
     NIX_PATH = "${homedir}/.nix-defexpr/channels";
