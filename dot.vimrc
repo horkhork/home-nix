@@ -28,7 +28,7 @@ nnoremap ,e :exe getline(".")<CR>
 " Execute the current selection in ex
 map ,E :<C-w>exe join(getline("'<","'>"),'<Bar>')<CR>
 
-map ,c :'<,'>:w !tmux load-buffer -<CR>
+map <silent> ,c :'<,'>:w !tmux load-buffer -<CR>
 map ,v :r!tmux save-buffer -<CR>
 
 " FZF Customizations
