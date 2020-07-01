@@ -32,8 +32,6 @@ let
 
   # For each of these, clone the repos under ~/workspace
   gitRepos = {
-    ab-app-dev = "ssh://git@git.source.akamai.com:7999/syscommcs/ab-app-dev.git";
-    devqa_tools = "ssh://git@git.source.akamai.com:7999/syscomm/devqa_tools";
     vault-k6-scripts = "ssh://git.source.akamai.com:7999/~ssosik/vault-k6-scripts.git";
     vkms_performance_testing = "ssh://git@git.source.akamai.com:7999/~pli/vkms_performance_testing.git";
     vkms-tavern-intg-tests = "ssh://git@git.source.akamai.com:7999/~ssosik/vkms-tavern-intg-tests.git";
@@ -131,6 +129,34 @@ let
     '';
   };
 
+  devqa-tools = stdenv.mkDerivation {
+    name = "devqa-tools";
+    unpackPhase = "true";
+    src = builtins.fetchGit {
+      url = "ssh://git@git.source.akamai.com:7999/syscomm/devqa_tools.git";
+      ref = "master";
+      rev = "f5767f6a9ffce0c04ac5f0fc256df613ef66a732";
+    };
+    installPhase = ''
+      mkdir -p "$out/bin"
+      find $src -maxdepth 1 -executable -type f -exec cp {} $out/bin/ \;
+    '';
+  };
+
+  ab-app-dev = stdenv.mkDerivation {
+    name = "ab-app-dev";
+    unpackPhase = "true";
+    src = builtins.fetchGit {
+      url = "ssh://git@git.source.akamai.com:7999/syscommcs/ab-app-dev.git";
+      ref = "master";
+      rev = "df1b13f965e73f8c5a8d9647efc29bf7249962ad";
+    };
+    installPhase = ''
+      mkdir -p "$out/bin"
+      find $src -maxdepth 1 -executable -type f -exec cp {} $out/bin/ \;
+    '';
+  };
+
   # Read a specific file out of a tgz under /u1/bundles
   tf-vault-provider-plugin = stdenv.mkDerivation {
     name = "tf-vault-provider-plugin";
@@ -219,6 +245,8 @@ in {
     # Custom packages
     p4
     helpers
+    devqa-tools
+    ab-app-dev
     terraform
     python-with-my-packages
     #p4-metadata
