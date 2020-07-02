@@ -18,3 +18,13 @@ function pbexec {
     pbpaste | bash
   fi
 }
+
+function api-test {
+  set -x
+  P=$(echo $1 | sed 's/^\/\+//')
+  shift
+  curl -k $@ \
+    --key $HOME/.certs/$USER-testnet.key \
+      --cert $HOME/.certs/$USER-testnet.crt \
+        https://api-test.dbattery.akamai.com/$P
+}

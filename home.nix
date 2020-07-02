@@ -261,8 +261,11 @@ in {
     ubuntuSetup = lib.hm.dag.entryAfter ["writeBoundary"] ''
 set -euxo pipefail
 
-# Install required things from apt
-$DRY_RUN_CMD sudo apt-get install -y akamai-sql akamai-nsh
+if [ ! -e $HOME/.akamai-apt  ] ; then
+    # Install required things from apt
+    $DRY_RUN_CMD sudo apt-get install -y akamai-sql akamai-nsh
+    touch $HOME/.akamai-apt
+fi
 
 # Set up certs
 pushd $HOME/.certs
