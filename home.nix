@@ -35,6 +35,8 @@ let
     vault-k6-scripts = "ssh://git.source.akamai.com:7999/~ssosik/vault-k6-scripts.git";
     vkms_performance_testing = "ssh://git@git.source.akamai.com:7999/~pli/vkms_performance_testing.git";
     vkms-tavern-intg-tests = "ssh://git@git.source.akamai.com:7999/~ssosik/vkms-tavern-intg-tests.git";
+    service-mesh = "ssh://git@git.source.akamai.com:7999/syscomm/service-mesh.git";
+    tavern = "https://github.com/taverntesting/tavern";
   };
 
   # Provide a custom version of terraform
@@ -211,6 +213,11 @@ in {
     # Standard packages from the pkgs.* namespace
     asciidoc
     curl
+    dhall
+    #dhall-bash
+    dhall-json
+    #dhall-nix
+    #dhall-text
     dust # Rust implementation of 'du'
     exa  # Rust implementation of 'ls'
     file
@@ -229,8 +236,10 @@ in {
     procs # Rust implementation of 'ps'
     pv
     #python3
+    rlwrap
     ripgrep
     #terraform
+    sqlite
     timewarrior
     tokei # Rust implementation of 'wc -l'
     traceroute
@@ -404,6 +413,7 @@ P4_rsh:ssh -2 -q -a -x -l p4ssh1681 perforce.akamai.com /bin/true_CHARSET=none
     direnv = {
       enable = true;
       enableZshIntegration = true;
+      enableNixDirenvIntegration = true;
     };
 
     fzf = {
@@ -544,6 +554,7 @@ P4_rsh:ssh -2 -q -a -x -l p4ssh1681 perforce.akamai.com /bin/true_CHARSET=none
         ale
         ansible-vim
         calendar-vim
+        dhall-vim
         direnv-vim
         emmet-vim
         fzf-vim
@@ -577,10 +588,10 @@ P4_rsh:ssh -2 -q -a -x -l p4ssh1681 perforce.akamai.com /bin/true_CHARSET=none
     };
 
     zsh = {
+      autocd = true;
       enable = true;
       enableAutosuggestions = true;
       enableCompletion = true;
-      autocd = true;
       history = {
         extended = true;
         save = 50000;
