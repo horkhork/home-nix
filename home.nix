@@ -205,6 +205,48 @@ EOF
     '';
   };
 
+  dhallyaml = stdenv.mkDerivation {
+    name = "dhall-yaml-1.2.0";
+    unpackPhase = "true";
+    buildInputs = [ dpkg ];
+    src = builtins.fetchTarball {
+      url = "https://github.com/dhall-lang/dhall-haskell/releases/download/1.33.1/dhall-yaml-1.2.0-x86_64-linux.tar.bz2";
+      sha256 = "16kjb563qmj82vfaa5rfbh5mig3az41cmm4n2dgvszpaph9wr9zp";
+    };
+    installPhase = ''
+      mkdir -p "$out/bin"
+      cp $src/bin/* $out/bin/.
+    '';
+  };
+
+  dhalljson = stdenv.mkDerivation {
+    name = "dhall-json-1.7.0";
+    unpackPhase = "true";
+    buildInputs = [ dpkg ];
+    src = builtins.fetchTarball {
+      url = "https://github.com/dhall-lang/dhall-haskell/releases/download/1.33.1/dhall-json-1.7.0-x86_64-linux.tar.bz2";
+      sha256 = "1kb4ma99nn8mqzayk2fyb0l374jqsns664690xg5a0krpfhmclgr";
+    };
+    installPhase = ''
+      mkdir -p "$out/bin"
+      cp $src/bin/* $out/bin/.
+    '';
+  };
+
+  dhall = stdenv.mkDerivation {
+    name = "dhall-1.33.1";
+    unpackPhase = "true";
+    buildInputs = [ dpkg ];
+    src = builtins.fetchTarball {
+      url = "https://github.com/dhall-lang/dhall-haskell/releases/download/1.33.1/dhall-1.33.1-x86_64-linux.tar.bz2";
+      sha256 = "19z3zvy4rgs12kd7n97mv9y53jyfs8096k1lrcxm31hjglshms9l";
+    };
+    installPhase = ''
+      mkdir -p "$out/bin"
+      cp $src/bin/* $out/bin/.
+    '';
+  };
+
 
 in {
   home.stateVersion = "20.03";
@@ -212,12 +254,8 @@ in {
   home.packages = with pkgs; [
     # Standard packages from the pkgs.* namespace
     asciidoc
+    cachix
     curl
-    dhall
-    #dhall-bash
-    dhall-json
-    #dhall-nix
-    #dhall-text
     dust # Rust implementation of 'du'
     exa  # Rust implementation of 'ls'
     file
@@ -252,6 +290,9 @@ in {
     zsh-powerlevel10k
   ] ++ [
     # Custom packages
+    dhall
+    dhallyaml
+    dhalljson
     p4
     helpers
     devqa-tools
@@ -389,6 +430,8 @@ P4_rsh:ssh -2 -q -a -x -l p4ssh1681 perforce.akamai.com /bin/true_CHARSET=none
   #home.file.".terraform.d/plugins/terraform-provider-vault".text = builtins.readFile  "";
   home.file.".config/nix/nix.conf".text = ''
     sandbox = relaxed
+    #trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= cache.dhall-lang.org:I9/H18WHd60olG5GsIjolp7CtepSgJmM2CsO813VTmM= dhall.cachix.org-1:8laGciue2JBwD49ICFtg+cIF8ddDaW7OFBjDb/dHEAo=
+    #substituters = https://cache.nixos.org https://cache.dhall-lang.org https://dhall.cachix.org
   '';
 
   home.sessionVariables = {
@@ -623,9 +666,9 @@ P4_rsh:ssh -2 -q -a -x -l p4ssh1681 perforce.akamai.com /bin/true_CHARSET=none
 
   }; # End programs
 
-  services = {
-    lorri = {
-      enable = true;
-    };
-  };
+  #services = {
+  #  lorri = {
+  #    enable = true;
+  #  };
+  #};
 }
