@@ -32,12 +32,13 @@ let
 
   # For each of these, clone the repos under ~/workspace
   gitRepos = {
-    vault-k6-scripts = "ssh://git.source.akamai.com:7999/~ssosik/vault-k6-scripts.git";
-    vkms_performance_testing = "ssh://git@git.source.akamai.com:7999/~pli/vkms_performance_testing.git";
-    vkms-tavern-intg-tests = "ssh://git@git.source.akamai.com:7999/~ssosik/vkms-tavern-intg-tests.git";
     service-mesh = "ssh://git@git.source.akamai.com:7999/syscomm/service-mesh.git";
     tavern = "https://github.com/taverntesting/tavern";
     terraform-provider-external = "https://github.com/hashicorp/terraform-provider-external";
+    vault-k6-scripts = "ssh://git.source.akamai.com:7999/~ssosik/vault-k6-scripts.git";
+    vimdiary = "git@github.com:horkhork/vimdiary.git";
+    vkms_performance_testing = "ssh://git@git.source.akamai.com:7999/~pli/vkms_performance_testing.git";
+    vkms-tavern-intg-tests = "ssh://git@git.source.akamai.com:7999/~ssosik/vkms-tavern-intg-tests.git";
   };
 
   # Provide a custom version of terraform
