@@ -37,15 +37,16 @@ let
     vkms-tavern-intg-tests = "ssh://git@git.source.akamai.com:7999/~ssosik/vkms-tavern-intg-tests.git";
     service-mesh = "ssh://git@git.source.akamai.com:7999/syscomm/service-mesh.git";
     tavern = "https://github.com/taverntesting/tavern";
+    terraform-provider-external = "https://github.com/hashicorp/terraform-provider-external";
   };
 
   # Provide a custom version of terraform
   terraform = stdenv.mkDerivation {
-    name = "terraform-0.12.24";
+    name = "terraform-0.12.28";
     unpackPhase = "true";
     src = pkgs.fetchzip {
-      url = "https://releases.hashicorp.com/terraform/0.12.24/terraform_0.12.24_linux_amd64.zip";
-      sha256 = "12hdq2c9pphipr7chdgp91k52rgla22048yhlps6ilpfv8v50467";
+      url = "https://releases.hashicorp.com/terraform/0.12.28/terraform_0.12.28_linux_amd64.zip";
+      sha256 = "0kzxnjkqmc6bzyrzxqhsvalwbp8ai8232bqj3kpki25kpryy4hn6";
     };
     installPhase = ''
       mkdir -p "$out/bin"
