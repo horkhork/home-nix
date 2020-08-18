@@ -168,8 +168,14 @@ let
     name = "vpoint";
     unpackPhase = "true";
     buildInputs = [ p4 ] ;
+    __noChroot = true;
+    inherit p4;
     installPhase = ''
       mkdir -p "$out/bin"
+      export SSH_AUTH_SOCK=${homedir}/.ssh/ssh_auth_sock
+      export PATH=/usr/bin/:$PATH
+      export P4PORT="rsh:ssh -2 -q -a -x -l p4source p4.source.akamai.com"
+      echo $out
       p4 print -q //projects/platform/vtastic/vpoint/install/install_vpoint.sh > $out/install_vpoint.sh
       /bin/bash $out/install_vpoint.sh -C $out/bin/
     '';
@@ -200,6 +206,38 @@ let
       echo $out
       ls $out
       #cp $src/* $out/bin/.
+    '';
+  };
+
+  # Create a specific P4 client
+  p4-sandbox = stdenv.mkDerivation {
+    name = "p4-sandbox";
+    buildInputs = [ p4 ] ;
+    __noChroot = true;
+    inherit p4;
+    unpackPhase = ''
+      mkdir -p ${homedir}/workspace/sandbox
+      cd ${homedir}/workspace/sandbox
+
+      cat <<EOF > .envrc
+source_up
+dotenv .perforce
+export P4PORT="rsh:ssh -2 -q -a -x -l p4source p4.source.akamai.com"
+EOF
+      cat <<EOF > .perforce
+P4CLIENT=ssosik_sanbox_nix
+
+EOF
+
+      export SSH_AUTH_SOCK=${homedir}/.ssh/ssh_auth_sock
+      export PATH=/usr/bin/:$PATH
+      export P4PORT="rsh:ssh -2 -q -a -x -l p4source p4.source.akamai.com"
+      export P4CLIENT=ssosik_sanbox_nix
+
+      p4 client -t ssosik_sandbox -o | p4 client -i
+      #p4 client -t ssosik_sandbox -o
+      #p4 client -o
+      p4 sync
     '';
   };
 
@@ -334,6 +372,7 @@ in {
     #tf-vault-provider-plugin
     #vimdiary
     #vPoint
+    p4-sandbox
   ];
 
   home.activation = {
