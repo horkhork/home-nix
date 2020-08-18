@@ -32,12 +32,15 @@ let
 
   # For each of these, clone the repos under ~/workspace
   gitRepos = {
+    ab-app-dev = "ssh://git@git.source.akamai.com:7999/syscommcs/ab-app-dev.git";
+    akamai-cbe-dev = "ssh://git@git.source.akamai.com:7999/isuite/akamai-cbe-dev.git";
     service-mesh = "ssh://git@git.source.akamai.com:7999/syscomm/service-mesh.git";
     tavern = "https://github.com/taverntesting/tavern";
     terraform-provider-external = "https://github.com/hashicorp/terraform-provider-external";
     vault-k6-scripts = "ssh://git.source.akamai.com:7999/~ssosik/vault-k6-scripts.git";
     vimdiary = "git@github.com:horkhork/vimdiary.git";
     vkms_performance_testing = "ssh://git@git.source.akamai.com:7999/~pli/vkms_performance_testing.git";
+    vkms_admin_tools = "ssh://git@git.source.akamai.com:7999/syscomm/vkms_admin_tools.git";
     vkms-tavern-intg-tests = "ssh://git@git.source.akamai.com:7999/~ssosik/vkms-tavern-intg-tests.git";
   };
 
@@ -52,6 +55,20 @@ let
     installPhase = ''
       mkdir -p "$out/bin"
       cp $src/terraform $out/bin/.
+    '';
+  };
+
+  # Provide a custom version of terraform
+  atlantis = stdenv.mkDerivation {
+    name = "atlantis-0.14.0";
+    unpackPhase = "true";
+    src = pkgs.fetchzip {
+      url = "https://github.com/runatlantis/atlantis/releases/download/v0.14.0/atlantis_linux_amd64.zip";
+      sha256 = "07vazkca8v0wy17irx04xhxxr53kpiliyk5fd7vlw0d16f2vs1g5";
+    };
+    installPhase = ''
+      mkdir -p "$out/bin"
+      cp $src/atlantis $out/bin/.
     '';
   };
 
@@ -118,14 +135,14 @@ let
     '';
   };
 
-  # Provide a custom version of terraform
+  # Provide a custom shell helper tools
   helpers = stdenv.mkDerivation {
     name = "shell-helpers";
     unpackPhase = "true";
     src = builtins.fetchGit {
       url = "ssh://git@git.source.akamai.com:7999/~ssosik/shell-helpers.git";
       ref = "master";
-      rev = "e6a3336158351467a92479b39bd42e98b610a141";
+      rev = "d3071a1af8fc55a8c8c637236534f9d9bf81eeb6";
     };
     installPhase = ''
       mkdir -p "$out/bin"
@@ -144,6 +161,17 @@ let
     installPhase = ''
       mkdir -p "$out/bin"
       find $src -maxdepth 1 -executable -type f -exec cp {} $out/bin/ \;
+    '';
+  };
+
+  vPoint = stdenv.mkDerivation {
+    name = "vpoint";
+    unpackPhase = "true";
+    buildInputs = [ p4 ] ;
+    installPhase = ''
+      mkdir -p "$out/bin"
+      p4 print -q //projects/platform/vtastic/vpoint/install/install_vpoint.sh > $out/install_vpoint.sh
+      /bin/bash $out/install_vpoint.sh -C $out/bin/
     '';
   };
 
@@ -300,10 +328,12 @@ in {
     devqa-tools
     ab-app-dev
     terraform
+    atlantis
     python-with-my-packages
     #p4-metadata
     #tf-vault-provider-plugin
     #vimdiary
+    #vPoint
   ];
 
   home.activation = {
@@ -408,6 +438,12 @@ fi
 #EOF
 #    P4PORT="rsh:ssh -2 -q -a -x -l p4ssh1681 perforce.akamai.com /bin/true" p4 client -t ssosik_ump_test_depots -o | p4 client -i
 #fi
+
+if [ ! -e $HOME/.akamai-vpoint ] ; then
+    # Install VPoint
+    /bin/bash <(p4 print -q //projects/platform/vtastic/vpoint/install/install_vpoint.sh)
+    touch $HOME/.akamai-vpoint
+fi
     '';
   };
 
@@ -657,11 +693,11 @@ P4_rsh:ssh -2 -q -a -x -l p4ssh1681 perforce.akamai.com /bin/true_CHARSET=none
         cat = "bat \$@";
         du="dust \$@";
         #find = "fd \$@";
-        grep="rg \$@";
-        ls = "exa \$@";
+        #grep="rg \$@";
+        #ls = "exa \$@";
         "ls -latr" = "exa -lars modified\$@";
-        ps="procs \$@";
-        time = "hyperfine \$@";
+        #ps="procs \$@";
+        #time = "hyperfine \$@";
         #"wc -l" = "dust \$@";
       };
     };
