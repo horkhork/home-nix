@@ -212,10 +212,12 @@ let
   # Create a specific P4 client
   p4-sandbox = stdenv.mkDerivation {
     name = "p4-sandbox";
+    unpackPhase = "true";
     buildInputs = [ p4 ] ;
     __noChroot = true;
     inherit p4;
-    unpackPhase = ''
+    installPhase = ''
+      mkdir -p $out
       mkdir -p ${homedir}/workspace/sandbox
       cd ${homedir}/workspace/sandbox
 
