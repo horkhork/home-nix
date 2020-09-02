@@ -142,7 +142,7 @@ let
     src = builtins.fetchGit {
       url = "ssh://git@git.source.akamai.com:7999/~ssosik/shell-helpers.git";
       ref = "master";
-      rev = "d3071a1af8fc55a8c8c637236534f9d9bf81eeb6";
+      rev = "e2b240b36d67ec9401653f1d412228a203463e03";
     };
     installPhase = ''
       mkdir -p "$out/bin"
@@ -340,6 +340,7 @@ in {
     k6
     mailutils
     niv # https://github.com/nmattia/niv
+    nodejs
     pandoc
     procs # Rust implementation of 'ps'
     pv
