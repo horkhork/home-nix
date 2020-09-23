@@ -142,7 +142,7 @@ let
     src = builtins.fetchGit {
       url = "ssh://git@git.source.akamai.com:7999/~ssosik/shell-helpers.git";
       ref = "master";
-      rev = "e2b240b36d67ec9401653f1d412228a203463e03";
+      rev = "cbbeba4444fc22f3307e6d8096e641c203c790b2";
     };
     installPhase = ''
       mkdir -p "$out/bin"
@@ -167,7 +167,7 @@ let
   vPoint = stdenv.mkDerivation {
     name = "vpoint";
     unpackPhase = "true";
-    buildInputs = [ p4 ] ;
+    buildInputs = [ p4 pkgs.krb5Full ] ;
     __noChroot = true;
     inherit p4;
     installPhase = ''
@@ -176,8 +176,9 @@ let
       export PATH=/usr/bin/:$PATH
       export P4PORT="rsh:ssh -2 -q -a -x -l p4source p4.source.akamai.com"
       echo $out
-      p4 print -q //projects/platform/vtastic/vpoint/install/install_vpoint.sh > $out/install_vpoint.sh
-      /bin/bash $out/install_vpoint.sh -C $out/bin/
+      #p4 print -q //projects/platform/vtastic/vpoint/install/install_vpoint.sh > $out/install_vpoint.sh
+      p4 print -q //sandbox/ssosik/install_vpoint.sh > $out/install_vpoint.sh
+      /bin/bash $out/install_vpoint.sh -C $out/
     '';
   };
 
@@ -374,7 +375,7 @@ in {
     #p4-metadata
     #tf-vault-provider-plugin
     #vimdiary
-    #vPoint
+    vPoint
     p4-sandbox
   ];
 
@@ -488,6 +489,18 @@ if [ ! -e $HOME/.akamai-vpoint ] ; then
 fi
     '';
   };
+
+  #nixpkgs.overlays = [ (self: super: {
+  #  super.krb5.override = {
+  #    enable = true;
+  #  };
+  #  openssh = super.openssh.override {
+  #    hpnSupport = true;
+  #    withKerberos = true;
+  #    kerberos = self.libkrb5;
+  #  };
+  #  }
+  #) ];
 
   home.file.".p10k.zsh".text = builtins.readFile "${homedir}/.config/nixpkgs/dot.p10k.zsh";
   home.file.".zshrc".text = builtins.readFile "${homedir}/.config/nixpkgs/dot.zshrc";

@@ -19,6 +19,16 @@ function pbexec {
   fi
 }
 
+function api-prod {
+  set -x
+  P=$(echo $1 | sed 's/^\/\+//')
+  shift
+  curl -k $@ \
+    --key $HOME/.certs/$USER.key \
+      --cert $HOME/.certs/$USER.crt \
+        https://api-prod.dbattery.akamai.com/$P
+}
+
 function api-test {
   set -x
   P=$(echo $1 | sed 's/^\/\+//')
@@ -27,4 +37,14 @@ function api-test {
     --key $HOME/.certs/$USER-testnet.key \
       --cert $HOME/.certs/$USER-testnet.crt \
         https://api-test.dbattery.akamai.com/$P
+}
+
+function api-qa {
+  set -x
+  P=$(echo $1 | sed 's/^\/\+//')
+  shift
+  curl -k $@ \
+    --key $HOME/.certs/$USER-testnet.key \
+      --cert $HOME/.certs/$USER-testnet.crt \
+        https://api-prod.dbattery.shared.qa.akamai.com/$P
 }
