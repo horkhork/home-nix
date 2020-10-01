@@ -142,7 +142,7 @@ let
     src = builtins.fetchGit {
       url = "ssh://git@git.source.akamai.com:7999/~ssosik/shell-helpers.git";
       ref = "master";
-      rev = "cbbeba4444fc22f3307e6d8096e641c203c790b2";
+      rev = "5eb5dbb31e1fb80ac8329d509757be5a89da9598";
     };
     installPhase = ''
       mkdir -p "$out/bin"
