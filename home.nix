@@ -142,7 +142,7 @@ let
     src = builtins.fetchGit {
       url = "ssh://git@git.source.akamai.com:7999/~ssosik/shell-helpers.git";
       ref = "master";
-      rev = "5eb5dbb31e1fb80ac8329d509757be5a89da9598";
+      rev = "7984314eda81a09eb7a24db45533762a2b812b45";
     };
     installPhase = ''
       mkdir -p "$out/bin"
@@ -525,6 +525,16 @@ P4_rsh:ssh -2 -q -a -x -l p4ssh1681 perforce.akamai.com /bin/true_CHARSET=none
     sandbox = relaxed
     #trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= cache.dhall-lang.org:I9/H18WHd60olG5GsIjolp7CtepSgJmM2CsO813VTmM= dhall.cachix.org-1:8laGciue2JBwD49ICFtg+cIF8ddDaW7OFBjDb/dHEAo=
     #substituters = https://cache.nixos.org https://cache.dhall-lang.org https://dhall.cachix.org
+  '';
+
+  home.file.".vim/templates/skeleton.md".text = ''
+---
+author: {author}
+date: {date}
+tags:
+- work
+title: {title}
+---
   '';
 
   home.sessionVariables = {
