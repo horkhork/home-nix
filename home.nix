@@ -320,6 +320,20 @@ EOF
     '';
   };
 
+  # Provide a newer version of glow https://github.com/charmbracelet/glow
+  glow = stdenv.mkDerivation {
+    name = "glow-1.0.2";
+    unpackPhase = "true";
+    src = builtins.fetchurl {
+      url = "https://github.com/charmbracelet/glow/releases/download/v1.0.2/glow_1.0.2_linux_x86_64.tar.gz";
+      #sha256 = "1wws3wvpbxgdlpgrpzh5f51bcb0hf4703r79iqnhv5y8x9kjb4nk";
+    };
+    installPhase = ''
+      mkdir -p "$out/bin"
+      tar -C $out/bin -xvf $src glow
+    '';
+  };
+
 
 in {
   home.stateVersion = "20.03";
@@ -335,7 +349,6 @@ in {
     fd   # Rust implementation of 'find'
     skim # Rust implementation of 'find'
     gcc
-    glow
     go
     graphviz
     htop
@@ -367,21 +380,22 @@ in {
     zsh-powerlevel10k
   ] ++ [
     # Custom packages
-    dhall
-    dhallyaml
-    dhalljson
-    p4
-    helpers
-    devqa-tools
-    ab-app-dev
-    terraform
-    atlantis
-    python-with-my-packages
     #p4-metadata
     #tf-vault-provider-plugin
     #vimdiary
-    vPoint
+    ab-app-dev
+    atlantis
+    devqa-tools
+    dhall
+    dhalljson
+    dhallyaml
+    glow
+    helpers
+    p4
     p4-sandbox
+    python-with-my-packages
+    terraform
+    vPoint
   ];
 
   home.activation = {
