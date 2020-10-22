@@ -51,6 +51,8 @@ let
     src = pkgs.fetchzip {
       url = "https://releases.hashicorp.com/terraform/0.12.28/terraform_0.12.28_linux_amd64.zip";
       sha256 = "0kzxnjkqmc6bzyrzxqhsvalwbp8ai8232bqj3kpki25kpryy4hn6";
+      #url = "https://releases.hashicorp.com/terraform/0.13.4/terraform_0.13.4_linux_amd64.zip";
+      #sha256 = "00yipyhm2rsmf602amv9a21ka18h77rjpsqxbrj6f50v100l9y98";
     };
     installPhase = ''
       mkdir -p "$out/bin"
@@ -333,6 +335,7 @@ in {
     fd   # Rust implementation of 'find'
     skim # Rust implementation of 'find'
     gcc
+    glow
     go
     graphviz
     htop
@@ -357,7 +360,9 @@ in {
     ts
     unzip
     vault
+    wiggle
     wget
+    zip
     #zenith # Rust implementation of 'top'
     zsh-powerlevel10k
   ] ++ [
@@ -507,6 +512,7 @@ fi
   home.file.".envrc".text = ''
 export SSH_AUTH_SOCK=${homedir}/.ssh/ssh_auth_sock
 export P4PORT="rsh:ssh -2 -q -a -x -l p4source p4.source.akamai.com"
+export VAULTBIN=${homedir}/workspace/vault/vault/bin/vault
   '';
   home.file.".ssh/rc".text = ''
 #!/bin/bash
