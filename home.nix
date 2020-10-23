@@ -557,6 +557,13 @@ title: {title}
 ---
   '';
 
+  home.file.".local/pandoc/lua/links-to-html.lua".text = ''
+function Link(el)
+  el.target = string.gsub(el.target, "%.md", ".html")
+  return el
+end
+  '';
+
   home.sessionVariables = {
     NIX_PATH = "${homedir}/.nix-defexpr/channels";
     NIX_PROFILES = "${homedir}/.nix-profile";
