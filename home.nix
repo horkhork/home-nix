@@ -773,7 +773,7 @@ end
       };
       oh-my-zsh = {
         enable = true;
-            plugins = [ "git" "history" "taskwarrior" "virtualenv" ]; # "tmuxinator" "ssh-agent"
+            plugins = [ "git" "history" "taskwarrior" "virtualenv" "ripgrep" ]; # "tmuxinator" "ssh-agent"
             theme = "zsh-powerlevel10k/powerlevel10k";
             custom = "${pkgs.zsh-powerlevel10k}/share/";
       };

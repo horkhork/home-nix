@@ -48,3 +48,20 @@ function api-qa {
       --cert $HOME/.certs/$USER-testnet.crt \
         https://api-prod.dbattery.shared.qa.akamai.com/$P
 }
+
+# ws alias to switch me into a given workspace, with completion
+compdef "_files -W $HOME/workspace" ws
+function ws {
+  cd $HOME/workspace/$1
+}
+
+# Attempt to map interactive ripgrep to ctrl-I, doesn't work
+#bindkey '^I' 'sk -m --preview="echo {} | cut -d: -f1 | xargs bat --color=always" --ansi -i -c "rg {}" | cut -d: -f1^M'
+#rg-file-widget() {
+#  LBUFFER="${LBUFFER}$(__fsel)"
+#  local ret=$?
+#  zle reset-prompt
+#  return $ret
+#}
+#zle     -N   rg-file-widget
+#bindkey '^E' rg-file-widget
