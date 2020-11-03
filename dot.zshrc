@@ -19,6 +19,14 @@ function pbexec {
   fi
 }
 
+function pbcopy {
+  tmux load-buffer -
+}
+
+function pbpaste {
+  tmux save-buffer -
+}
+
 function api-prod {
   set -x
   P=$(echo $1 | sed 's/^\/\+//')
@@ -50,7 +58,7 @@ function api-qa {
 }
 
 # ws alias to switch me into a given workspace, with completion
-compdef "_files -W $HOME/workspace" ws
+#compdef "_files -W $HOME/workspace" ws
 function ws {
   cd $HOME/workspace/$1
 }

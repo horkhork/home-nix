@@ -765,6 +765,9 @@ end
       enable = true;
       enableAutosuggestions = true;
       enableCompletion = true;
+      envExtra = ''
+          compdef "_files -W $HOME/workspace" ws
+        '';
       history = {
         extended = true;
         save = 50000;
@@ -779,8 +782,8 @@ end
       };
       shellAliases = {
         vi = "vim \$@";
-        pbcopy = "tmux load-buffer -";
-        pbpaste = "tmux save-buffer -";
+        #pbcopy = "tmux load-buffer -";
+        #pbpaste = "tmux save-buffer -";
         # Idea from https://gcollazo.com/common-nix-commands-written-in-rust/
         cat = "bat \$@";
         du="dust \$@";
