@@ -765,9 +765,9 @@ end
       enable = true;
       enableAutosuggestions = true;
       enableCompletion = true;
-      envExtra = ''
-          compdef "_files -W $HOME/workspace" ws
-        '';
+      #envExtra = ''
+      #    compdef "_files -W $HOME/workspace" ws
+      #  '';
       history = {
         extended = true;
         save = 50000;

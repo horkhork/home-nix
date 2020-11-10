@@ -15,7 +15,7 @@ function pbexec {
   echo "Run it? (y/n)"
   read runit
   if [[ $runit == "y" ]] || [[ $runit == "Y" ]] || [[ $runit == "yes" ]] ; then
-    pbpaste | bash
+    eval $(pbpaste)
   fi
 }
 
@@ -28,20 +28,33 @@ function pbpaste {
 }
 
 function api-prod {
+  EXTRAS=""
+  if [ "$1" = "-q" ] ; then
+    shift
+    EXTRAS="-s"
+  else
+    set -x
+  fi
   set -x
   P=$(echo $1 | sed 's/^\/\+//')
   shift
-  curl -k $@ \
+  curl $EXTRAS -k $@ \
     --key $HOME/.certs/$USER.key \
       --cert $HOME/.certs/$USER.crt \
         https://api-prod.dbattery.akamai.com/$P
 }
 
 function api-test {
-  set -x
+  EXTRAS=""
+  if [ "$1" = "-q" ] ; then
+    shift
+    EXTRAS="-s"
+  else
+    set -x
+  fi
   P=$(echo $1 | sed 's/^\/\+//')
   shift
-  curl -k $@ \
+  curl $EXTRAS -k $@ \
     --key $HOME/.certs/$USER-testnet.key \
       --cert $HOME/.certs/$USER-testnet.crt \
         https://api-test.dbattery.akamai.com/$P
